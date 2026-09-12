@@ -43,160 +43,147 @@ const featuredMovies = [
   {searchQuery ? (
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
       
-      <!-- Search Header Glass Card -->
-      <div class="glass-card rounded-3xl p-6 sm:p-8 mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6 border border-white/80 dark:border-white/10">
+      <!-- Neo-Brutalist Search Summary Card -->
+      <div class="brutal-card p-6 sm:p-8 mb-8 rounded-none flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
-          <div class="flex items-center gap-2 mb-2">
-            <a href="/" class="text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1 transition-colors">
-              <span>←</span>
-              <span>Back to Archive</span>
+          <div class="flex items-center gap-2 mb-2 font-mono text-xs uppercase font-bold">
+            <a href="/" class="hover:bg-[#e2f952] hover:text-black px-1.5 py-0.5 border border-black dark:border-white transition-colors">
+              ← INDEX
             </a>
-            <span class="text-zinc-300 dark:text-zinc-700">•</span>
-            <span class="glass-pill text-[10px] font-mono px-2 py-0.5 rounded-full text-blue-600 dark:text-blue-400 font-semibold">
-              LIVE SEARCH
+            <span>//</span>
+            <span class="brutal-tag-accent text-[10px] px-2 py-0.5 font-bold">
+              SEARCH REPOSITORY
             </span>
           </div>
           
-          <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-            Results for <span class="text-blue-600 dark:text-blue-400 font-medium">"{searchQuery}"</span>
+          <h1 class="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black dark:text-white">
+            RESULTS FOR <span class="bg-[#e2f952] text-black px-2">"{searchQuery}"</span>
           </h1>
 
           {searchResults && searchResults.length > 0 && searchResults[0].title.toLowerCase() !== searchQuery.toLowerCase() && (
-            <div class="inline-flex items-center gap-2 mt-3 px-3 py-1.5 rounded-xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/70 dark:border-blue-800/40 text-xs text-blue-900 dark:text-blue-300 font-mono">
-              <span class="text-blue-500 font-bold">✦</span>
-              <span>Typo auto-match: Top result is <strong>{searchResults[0].title}</strong> ({searchResults[0].year})</span>
+            <div class="brutal-card-accent inline-flex items-center gap-2 mt-3 px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-none">
+              <span>[!]</span>
+              <span>TYPO AUTO-MATCH: <strong>{searchResults[0].title}</strong> ({searchResults[0].year})</span>
             </div>
           )}
 
-          <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-2 font-sans">
-            Found {searchResults ? searchResults.length : 0} titles. Select any movie poster to explore its 35mm film stills.
+          <p class="font-mono text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 mt-2 uppercase font-bold">
+            INDEXED {searchResults ? searchResults.length : 0} TITLES • SELECT TO OPEN ARCHIVE
           </p>
         </div>
 
         <a 
           href="/" 
-          class="glass-btn px-4 py-2 rounded-xl text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white self-start sm:self-center shrink-0"
+          class="brutal-btn px-4 py-2 text-xs uppercase font-bold rounded-none self-start sm:self-center shrink-0"
         >
-          Clear Search
+          CLEAR [✕]
         </a>
       </div>
 
-      <!-- Poster Grid -->
+      <!-- Poster Grid (Editorial & Clean) -->
       {searchResults && searchResults.length > 0 ? (
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6 lg:gap-8">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {searchResults.map((m, index) => (
             <MoviePosterCard movie={m} index={index} />
           ))}
         </div>
       ) : (
-        <div class="glass-card rounded-3xl p-12 sm:p-16 text-center border border-zinc-200/80 dark:border-zinc-800/80 max-w-xl mx-auto">
-          <div class="w-12 h-12 rounded-2xl glass-btn flex items-center justify-center mx-auto mb-4 text-zinc-400">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
-          </div>
-          <p class="text-xl font-bold text-zinc-800 dark:text-zinc-200">No movie posters found for "{searchQuery}"</p>
-          <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-2">
-            Try searching another movie title like "Fight Club", "Blade Runner", or "Interstellar".
+        <div class="brutal-card p-12 text-center max-w-lg mx-auto rounded-none">
+          <p class="text-xl font-black uppercase tracking-tight text-black dark:text-white">NO TITLES FOUND</p>
+          <p class="font-mono text-xs uppercase text-zinc-600 dark:text-zinc-400 mt-2 font-bold">
+            TRY SEARCHING "FIGHT CLUB", "BLADE RUNNER", OR "INTERSTELLAR"
           </p>
           <a 
             href="/" 
-            class="glass-btn-primary inline-block mt-6 px-5 py-2.5 rounded-xl text-xs font-semibold"
+            class="brutal-btn-primary inline-block mt-6 px-6 py-2.5 text-xs uppercase font-black rounded-none"
           >
-            Return to Featured Films
+            RETURN TO CATALOG →
           </a>
         </div>
       )}
 
     </section>
   ) : (
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-4">
       
-      <!-- Quick Film Catalog Selector Bar -->
-      <div class="glass-panel-elevated p-1.5 rounded-2xl flex items-center gap-1.5 overflow-x-auto mb-8 border border-zinc-200/70 dark:border-zinc-800/70 scrollbar-none">
-        <span class="text-[11px] uppercase tracking-wider font-mono text-zinc-400 dark:text-zinc-500 px-3 whitespace-nowrap">
-          Featured:
+      <!-- Editorial Film Catalog Bar -->
+      <div class="bg-white dark:bg-[#141418] border-2 border-black dark:border-white shadow-[4px_4px_0px_#000000] dark:shadow-[4px_4px_0px_#ffffff] p-2 flex items-center gap-2 overflow-x-auto mb-8 rounded-none">
+        <span class="font-mono text-[11px] uppercase font-black px-2 tracking-wider shrink-0 text-black dark:text-white">
+          CATALOG:
         </span>
         {featuredMovies.map(item => (
           <a 
             href={`/?id=${item.id}`}
-            class={`px-3 py-1.5 text-xs font-medium rounded-xl whitespace-nowrap transition-all ${
+            class={`px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-none whitespace-nowrap transition-colors border-2 ${
               item.id === currentId 
-                ? 'glass-btn-primary shadow-xs' 
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-zinc-800/60'
+                ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white' 
+                : 'bg-transparent text-black dark:text-white border-transparent hover:bg-[#e2f952] hover:text-black hover:border-black'
             }`}
           >
-            {item.title} <span class="opacity-60 text-[10px] font-mono">({item.year})</span>
+            {item.title} <span class="opacity-75 text-[10px]">[{item.year}]</span>
           </a>
         ))}
       </div>
 
-      <!-- Active Movie Hero Glass Card -->
-      <div class="glass-card rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 border border-white/80 dark:border-white/10">
+      <!-- Active Movie Hero Brutalist Card -->
+      <div class="brutal-card p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 rounded-none">
         <div class="flex items-start gap-5">
           {movie.posterUrl && (
             <img 
               src={movie.posterUrl} 
               alt={movie.title} 
-              class="w-20 sm:w-24 aspect-[2/3] object-cover rounded-2xl border border-black/5 dark:border-white/10 shadow-md hidden sm:block shrink-0" 
+              class="w-24 sm:w-28 aspect-[2/3] object-cover border-2 border-black dark:border-white shadow-[4px_4px_0px_#000000] dark:shadow-[4px_4px_0px_#ffffff] hidden sm:block shrink-0 rounded-none" 
             />
           )}
           <div>
             <div class="flex items-center gap-2 mb-2 flex-wrap">
-              <span class="glass-pill text-[10px] font-mono px-2 py-0.5 rounded-full text-zinc-600 dark:text-zinc-400 font-medium">
-                INDEX #{movie.tmdbId}
+              <span class="brutal-tag text-[10px] font-bold">
+                TMDB RECORD #{movie.tmdbId}
               </span>
-              <span class="text-zinc-300 dark:text-zinc-700">•</span>
-              <span class="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                API ACTIVE
+              <span>//</span>
+              <span class="brutal-tag-accent text-[10px] font-bold">
+                REST API OPERATIONAL
               </span>
             </div>
 
-            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-              {movie.title} <span class="text-xl sm:text-2xl font-normal text-zinc-400 dark:text-zinc-500 font-sans">({movie.year})</span>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-black dark:text-white">
+              {movie.title} <span class="text-xl sm:text-2xl font-bold text-zinc-500 font-mono">[{movie.year}]</span>
             </h1>
 
-            <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-2 max-w-2xl font-sans">
-              {movie.director ? `Directed by ${movie.director} • ` : ''}{movie.aspectRatio || '35mm Anamorphic'} • {frames.length} Stills Archived
+            <p class="font-mono text-xs sm:text-sm font-bold uppercase text-zinc-700 dark:text-zinc-300 mt-2">
+              {movie.director ? `DIR. ${movie.director} • ` : ''}{movie.aspectRatio || '35MM WIDESCREEN'} • {frames.length} ARCHIVED STILLS
             </p>
 
             {movie.overview && (
-              <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-2 max-w-2xl line-clamp-2">
+              <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-2 max-w-2xl line-clamp-2 font-mono uppercase font-bold">
                 {movie.overview}
               </p>
             )}
           </div>
         </div>
 
-        <!-- Quick Action Buttons -->
-        <div class="flex items-center gap-2.5 flex-wrap self-start md:self-center shrink-0">
+        <!-- Brutalist Action Controls -->
+        <div class="flex items-center gap-2.5 flex-wrap self-start md:self-center shrink-0 font-mono">
           <a 
             href={`/api/frames?movie_id=${movie.tmdbId}`} 
             target="_blank"
-            class="glass-btn px-4 py-2 rounded-xl text-xs font-mono font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1.5"
+            class="brutal-btn px-4 py-2 text-xs uppercase font-bold rounded-none flex items-center gap-1.5"
           >
-            <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-            <span>REST API</span>
+            <span>[ API ]</span>
           </a>
           
           <button 
             onclick={`openUploadWithMovie('${movie.tmdbId}')`}
-            class="glass-btn-primary px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5"
+            class="brutal-btn-primary px-4 py-2 text-xs uppercase font-black rounded-none flex items-center gap-1.5"
           >
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            <span>Pin Frame</span>
+            <span>+ PIN FRAME</span>
           </button>
         </div>
       </div>
     </section>
 
-    <!-- ================= CINEMA FRAMES GRID ================= -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+    <!-- ================= CINEMA STILLS GRID ================= -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {frames.length > 0 ? (
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {frames.map((frame, index) => (
@@ -206,66 +193,61 @@ const featuredMovies = [
           <!-- Pin Frame Call-to-Action Card -->
           <div 
             onclick={`openUploadWithMovie('${movie.tmdbId}')`}
-            class="glass-card glass-card-hover rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer min-h-[220px] border-2 border-dashed border-zinc-300 dark:border-zinc-700/80 hover:border-zinc-500 dark:hover:border-zinc-400 group"
+            class="brutal-card brutal-card-hover p-6 flex flex-col items-center justify-center text-center cursor-pointer min-h-[220px] rounded-none border-2 border-dashed border-black dark:border-white group"
           >
-            <div class="w-12 h-12 rounded-2xl glass-btn flex items-center justify-center mb-3 group-hover:scale-105 transition-transform text-zinc-600 dark:text-zinc-300">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-              </svg>
+            <div class="w-12 h-12 border-2 border-black dark:border-white bg-[#e2f952] text-black font-black text-2xl flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+              +
             </div>
-            <p class="text-base font-semibold text-zinc-900 dark:text-zinc-100">Pin New Frame</p>
-            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-              Direct upload to Catbox • Saved to KV
+            <p class="font-black text-base uppercase tracking-tight text-black dark:text-white">PIN NEW FRAME</p>
+            <p class="font-mono text-xs font-bold text-zinc-600 dark:text-zinc-400 mt-1 uppercase">
+              STREAM DIRECTLY TO CATBOX • KV
             </p>
           </div>
         </div>
       ) : (
-        <div class="glass-card rounded-3xl p-12 text-center border border-zinc-200/80 dark:border-zinc-800/80 max-w-lg mx-auto">
-          <p class="text-lg font-bold text-zinc-800 dark:text-zinc-200">No frames collected yet for this title.</p>
-          <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-2">
-            Be the first archivist to pin a 35mm frame. Your upload streams directly to Catbox with a public API endpoint.
+        <div class="brutal-card p-12 text-center max-w-lg mx-auto rounded-none">
+          <p class="text-xl font-black uppercase text-black dark:text-white">NO STILLS COLLECTED YET</p>
+          <p class="font-mono text-xs text-zinc-600 dark:text-zinc-400 mt-2 uppercase font-bold">
+            BE THE FIRST CINEMATOGRAPHER TO PIN A 35MM FRAME.
           </p>
           <button 
             onclick={`openUploadWithMovie('${movie.tmdbId}')`}
-            class="glass-btn-primary mt-6 px-5 py-2.5 rounded-xl text-xs font-semibold"
+            class="brutal-btn-primary mt-6 px-6 py-2.5 text-xs uppercase font-black rounded-none"
           >
-            + Pin The First Frame
+            + PIN FIRST FRAME
           </button>
         </div>
       )}
 
-      <!-- ================= DEVELOPER API TERMINAL SECTION ================= -->
+      <!-- ================= DEVELOPER API DOCUMENTATION BLOCK ================= -->
       <section class="mt-16 sm:mt-20">
-        <div class="glass-card rounded-3xl p-6 sm:p-8 border border-zinc-200/80 dark:border-zinc-800/80 shadow-xl">
-          <div class="flex items-center justify-between gap-4 flex-wrap pb-5 border-b border-zinc-200/60 dark:border-zinc-800/60">
+        <div class="brutal-card p-6 sm:p-8 rounded-none">
+          <div class="flex items-center justify-between gap-4 flex-wrap pb-4 border-b-2 border-black dark:border-white">
             <div>
-              <span class="glass-pill text-[10px] font-mono px-2 py-0.5 rounded-full text-emerald-600 dark:text-emerald-400 font-semibold">
-                OPEN REST API
+              <span class="brutal-tag-accent text-[10px] font-bold">
+                [ OPEN REST API ]
               </span>
-              <h3 class="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 mt-1.5">
-                Developer Documentation
+              <h3 class="text-2xl font-black uppercase tracking-tight text-black dark:text-white mt-1">
+                DEVELOPER ACCESS
               </h3>
             </div>
             <button 
               onclick={`copyToClipboard('${Astro.url.origin}/api/frames?movie_id=${movie.tmdbId}')`}
-              class="glass-btn px-3.5 py-1.5 rounded-xl text-xs font-mono font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1.5"
+              class="brutal-btn px-4 py-2 text-xs font-mono uppercase font-bold rounded-none flex items-center gap-1.5"
             >
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-              </svg>
-              <span>Copy Endpoint URL</span>
+              COPY ENDPOINT ⎘
             </button>
           </div>
 
-          <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs font-mono">
+          <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs font-mono font-bold">
             <div>
-              <p class="text-zinc-500 dark:text-zinc-400 mb-2">// 1. Retrieve all frames for any movie:</p>
-              <div class="bg-zinc-950 text-emerald-400 p-3.5 rounded-xl border border-zinc-800 select-all overflow-x-auto shadow-inner">
+              <p class="text-zinc-600 dark:text-zinc-400 mb-2 uppercase">// 1. GET FRAMES FOR MOVIE:</p>
+              <div class="bg-black text-[#e2f952] p-3.5 border-2 border-black dark:border-white shadow-[4px_4px_0px_#000000] dark:shadow-[4px_4px_0px_#ffffff] select-all overflow-x-auto rounded-none">
                 curl -X GET "{Astro.url.origin}/api/frames?movie_id={movie.tmdbId}"
               </div>
               
-              <p class="text-zinc-500 dark:text-zinc-400 mt-5 mb-2">// 2. Programmatic frame upload via Catbox:</p>
-              <div class="bg-zinc-950 text-amber-300 p-3.5 rounded-xl border border-zinc-800 select-all overflow-x-auto shadow-inner">
+              <p class="text-zinc-600 dark:text-zinc-400 mt-5 mb-2 uppercase">// 2. UPLOAD FRAME VIA MULTIPART:</p>
+              <div class="bg-black text-white p-3.5 border-2 border-black dark:border-white shadow-[4px_4px_0px_#000000] dark:shadow-[4px_4px_0px_#ffffff] select-all overflow-x-auto rounded-none">
                 curl -X POST "{Astro.url.origin}/api/upload" \<br/>
                 &nbsp;&nbsp;-F "tmdb_id={movie.tmdbId}" \<br/>
                 &nbsp;&nbsp;-F "timestamp=01:24:15" \<br/>
@@ -274,8 +256,8 @@ const featuredMovies = [
             </div>
 
             <div>
-              <p class="text-zinc-500 dark:text-zinc-400 mb-2">// Sample JSON Response (Zero Database):</p>
-              <div class="bg-zinc-950 text-zinc-300 p-3.5 rounded-xl border border-zinc-800 overflow-x-auto max-h-52 text-[11px] shadow-inner">
+              <p class="text-zinc-600 dark:text-zinc-400 mb-2 uppercase">// JSON PAYLOAD SCHEMA (ZERO DB):</p>
+              <div class="bg-black text-white p-3.5 border-2 border-black dark:border-white shadow-[4px_4px_0px_#000000] dark:shadow-[4px_4px_0px_#ffffff] overflow-x-auto max-h-52 text-[11px] rounded-none">
 <pre>{`{
   "status": "success",
   "movie": { "tmdbId": "${movie.tmdbId}", "title": "${movie.title}" },

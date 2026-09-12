@@ -7,8 +7,8 @@ interface Props {
 }
 
 const { 
-  title = 'Archive.Frame — 35mm Cinema Index',
-  description = 'A modern zero-database cinematography repository of movie stills and cinema frames, powered by Catbox CDN and Cloudflare KV.'
+  title = 'Archive.Frame — 35mm Cinema Archive & Public REST API',
+  description = 'A zero-database brutalist cinema frame repository and public API powered by Catbox CDN and Cloudflare KV.'
 } = Astro.props;
 ---
 
@@ -21,75 +21,73 @@ const {
   <meta name="description" content={description} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-  <!-- Google Fonts: Plus Jakarta Sans & Space Mono -->
+  <!-- Google Fonts: Space Grotesk (Editorial Brutalist) & Space Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 </head>
 
-<body class="neoblur-canvas min-h-screen text-zinc-900 dark:text-zinc-100 transition-colors duration-300 font-sans selection:bg-zinc-900 selection:text-white dark:selection:bg-white dark:selection:text-zinc-950 antialiased">
+<body class="min-h-screen transition-colors duration-150 font-sans selection:bg-[#e2f952] selection:text-black">
 
-  <!-- ================= TOP ARCHIVE HEADER ================= -->
-  <header class="border-b border-zinc-200/60 dark:border-zinc-800/60 glass-panel-elevated sticky top-0 z-40 transition-colors">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4">
+  <!-- ================= NEO-BRUTALIST TOP NAVIGATION ================= -->
+  <header class="border-b-2 border-black dark:border-white bg-[#f5f4ef] dark:bg-[#0d0d0f] sticky top-0 z-40 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4">
       
-      <!-- Brand & Version Pill -->
+      <!-- Brand & Technical Tag -->
       <a href="/" class="flex items-center gap-3 group focus:outline-none">
         <div class="flex flex-col">
           <div class="flex items-center gap-2">
-            <span class="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-              Archive<span class="text-zinc-400 dark:text-zinc-500 font-normal">.Frame</span>
+            <span class="text-2xl sm:text-3xl font-black uppercase tracking-tighter text-black dark:text-white group-hover:bg-[#e2f952] group-hover:text-black transition-colors px-1 -ml-1">
+              ARCHIVE.FRAME
             </span>
-            <span class="glass-pill text-[10px] font-mono px-2 py-0.5 rounded-full text-zinc-600 dark:text-zinc-400 font-medium">
-              v1.0
+            <span class="brutal-tag text-[10px] font-mono px-2 py-0.5 font-bold">
+              VOL.01
             </span>
           </div>
-          <p class="font-mono text-[10px] text-zinc-400 dark:text-zinc-500 tracking-wider">
-            CINEMATOGRAPHY REPOSITORY • ZERO-DB API
+          <p class="font-mono text-[10px] text-zinc-600 dark:text-zinc-400 tracking-wider uppercase font-bold">
+            ZERO-DATABASE 35MM REPOSITORY • REST API
           </p>
         </div>
       </a>
 
-      <!-- Search & Header Controls -->
+      <!-- Search & Brutalist Controls -->
       <div class="flex items-center gap-2.5 w-full md:w-auto relative">
         
-        <!-- Live TMDB Search Input with Glass Form & Dropdown -->
+        <!-- Live Autocomplete Search Form -->
         <form action="/" method="GET" class="relative flex-1 md:w-80 flex items-center">
           <input 
             type="text" 
             name="q"
             id="globalSearchInput"
-            placeholder="Search movies (e.g. Fight Club)..." 
+            placeholder="SEARCH MOVIES (E.G. FIGHT CLUB)..." 
             autocomplete="off"
-            class="glass-input w-full pl-9 pr-8 py-2 text-xs sm:text-sm rounded-xl text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-500 font-sans focus:outline-none"
+            class="brutal-input w-full pl-9 pr-8 py-2 text-xs sm:text-sm uppercase font-mono font-bold tracking-tight rounded-none focus:outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
           />
-          <button type="submit" class="absolute left-2.5 top-2.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors" title="Search">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          <button type="submit" class="absolute left-2.5 top-2.5 text-black dark:text-white" title="Search">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
           </button>
           
-          <!-- Floating Glass Autocomplete Dropdown -->
-          <div id="searchDropdown" class="glass-panel-elevated absolute left-0 right-0 top-full mt-2 rounded-2xl shadow-2xl max-h-96 overflow-y-auto hidden z-50 p-1.5 border border-zinc-200/80 dark:border-zinc-800/80">
+          <!-- Brutalist Autocomplete Dropdown (Poster, Title, Year ONLY) -->
+          <div id="searchDropdown" class="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-[#141418] border-2 border-black dark:border-white shadow-[5px_5px_0px_#000000] dark:shadow-[5px_5px_0px_#ffffff] max-h-96 overflow-y-auto hidden z-50 p-2 divide-y-2 divide-black/10 dark:divide-white/10">
           </div>
         </form>
 
-        <!-- Pin Frame Action Trigger -->
+        <!-- Pin Frame Trigger -->
         <button 
           id="openUploadBtn"
-          class="glass-btn-primary flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-medium text-xs tracking-wide shadow-xs active:scale-95 whitespace-nowrap"
+          class="brutal-btn-primary px-3.5 py-2 text-xs uppercase font-bold tracking-wider rounded-none flex items-center gap-1.5 whitespace-nowrap"
         >
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-          </svg>
-          <span>Pin Frame</span>
+          <span class="text-sm leading-none font-black">+</span>
+          <span>PIN FRAME</span>
         </button>
 
-        <!-- Dark / Light Mode Toggle -->
+        <!-- Theme Toggle -->
         <button 
           id="themeToggleBtn"
           title="Toggle Dark / Light Mode"
-          class="glass-btn p-2 rounded-xl text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
+          class="brutal-btn p-2 text-xs font-mono font-bold rounded-none flex items-center justify-center min-w-[36px]"
         >
           <span id="themeIcon">🌙</span>
         </button>
@@ -101,101 +99,108 @@ const {
   <!-- ================= MAIN CONTENT INJECTION ================= -->
   <slot />
 
-  <!-- ================= MINIMAL GLASS FOOTER ================= -->
-  <footer class="border-t border-zinc-200/60 dark:border-zinc-800/60 mt-20 py-8 text-center font-mono text-xs text-zinc-400 dark:text-zinc-500">
-    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <p>ARCHIVE.FRAME • POWERED BY CATBOX CDN & CLOUDFLARE KV • ZERO-DATABASE ENGINE</p>
-      <div class="flex items-center gap-4">
-        <a href="/api/frames?movie_id=157336" target="_blank" class="hover:underline text-zinc-600 dark:text-zinc-300 transition-colors">Open Sample API</a>
+  <!-- ================= NEO-BRUTALIST FOOTER ================= -->
+  <footer class="border-t-2 border-black dark:border-white bg-white dark:bg-[#141418] mt-24 py-8 font-mono text-xs font-bold text-black dark:text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="uppercase tracking-wider">
+        ARCHIVE.FRAME // ZERO-DATABASE SYSTEM // POWERED BY CATBOX CDN & CLOUDFLARE KV
+      </p>
+      <div class="flex items-center gap-4 uppercase tracking-wider">
+        <a href="/api/frames?movie_id=157336" target="_blank" class="hover:bg-[#e2f952] hover:text-black px-1.5 py-0.5 border border-black dark:border-white transition-colors">
+          OPEN API
+        </a>
         <span>•</span>
-        <p>DATA FROM THE MOVIE DATABASE (TMDB)</p>
+        <p>TMDB INDEXED</p>
       </div>
     </div>
   </footer>
 
-  <!-- ================= FLOATING GLASS UPLOAD MODAL ================= -->
-  <div id="uploadModal" class="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-md flex items-center justify-center z-50 hidden p-4">
-    <div class="glass-panel-elevated max-w-lg w-full p-6 sm:p-8 rounded-3xl relative shadow-2xl border border-white/60 dark:border-white/10 animate-in fade-in zoom-in-95 duration-200">
-      <button id="closeUploadModalBtn" class="glass-btn absolute top-5 right-5 w-8 h-8 rounded-full flex items-center justify-center text-zinc-400 hover:text-zinc-900 dark:hover:text-white text-xs">
+  <!-- ================= NEO-BRUTALIST PIN FRAME MODAL ================= -->
+  <div id="uploadModal" class="fixed inset-0 bg-black/75 backdrop-blur-xs flex items-center justify-center z-50 hidden p-4">
+    <div class="bg-white dark:bg-[#141418] border-2 sm:border-[3px] border-black dark:border-white shadow-[8px_8px_0px_#000000] dark:shadow-[8px_8px_0px_#ffffff] max-w-lg w-full p-6 sm:p-8 relative rounded-none">
+      
+      <button id="closeUploadModalBtn" class="brutal-btn absolute top-4 right-4 w-8 h-8 flex items-center justify-center font-mono font-black text-sm rounded-none">
         ✕
       </button>
 
-      <div class="border-b border-zinc-200/60 dark:border-zinc-800/60 pb-4 mb-6">
-        <span class="glass-pill text-[10px] font-mono px-2 py-0.5 rounded-full text-zinc-600 dark:text-zinc-400 font-medium">
-          CATBOX CDN INGEST
+      <div class="border-b-2 border-black dark:border-white pb-4 mb-6">
+        <span class="brutal-tag-accent text-[10px] font-mono px-2 py-0.5 font-bold mb-2">
+          [ CATBOX STREAM INGEST ]
         </span>
-        <h3 class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 mt-2">
-          Pin Frame to Archive
+        <h3 class="text-2xl sm:text-3xl font-black uppercase tracking-tight text-black dark:text-white mt-1">
+          PIN FRAME TO ARCHIVE
         </h3>
-        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-          Zero hosting cost • Permanent Catbox direct file storage
+        <p class="text-xs font-mono text-zinc-600 dark:text-zinc-400 mt-1 uppercase">
+          PERMANENT CATBOX CDN INGEST • 0 HOST STORAGE
         </p>
       </div>
 
-      <form id="uploadForm" class="space-y-4 text-xs font-sans">
+      <form id="uploadForm" class="space-y-4 font-mono text-xs">
         <div>
-          <label class="block font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">TMDB Movie ID / Title</label>
+          <label class="block font-bold uppercase tracking-wider text-black dark:text-white mb-1">TMDB MOVIE ID / TITLE</label>
           <input 
             type="text" 
             name="tmdb_id" 
             id="modalTmdbId" 
-            placeholder="e.g. 157336" 
+            placeholder="E.G. 157336" 
             required 
-            class="glass-input w-full p-2.5 rounded-xl font-mono text-zinc-900 dark:text-zinc-100 focus:outline-none" 
+            class="brutal-input w-full p-2.5 font-bold text-xs uppercase rounded-none focus:outline-none" 
           />
         </div>
 
         <div>
-          <label class="block font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Timestamp (HH:MM:SS)</label>
+          <label class="block font-bold uppercase tracking-wider text-black dark:text-white mb-1">TIMESTAMP (HH:MM:SS)</label>
           <input 
             type="text" 
             name="timestamp" 
-            placeholder="e.g. 01:24:15" 
+            placeholder="01:24:15" 
             required 
-            class="glass-input w-full p-2.5 rounded-xl font-mono text-zinc-900 dark:text-zinc-100 focus:outline-none" 
+            class="brutal-input w-full p-2.5 font-bold text-xs rounded-none focus:outline-none" 
           />
         </div>
 
         <div>
-          <label class="block font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Scene Note / Description</label>
+          <label class="block font-bold uppercase tracking-wider text-black dark:text-white mb-1">SCENE NOTE (OPTIONAL)</label>
           <input 
             type="text" 
             name="tag" 
-            placeholder="e.g. Accretion Disk Orbit" 
-            class="glass-input w-full p-2.5 rounded-xl text-zinc-900 dark:text-zinc-100 focus:outline-none" 
+            placeholder="ACCRETION DISK ORBIT" 
+            class="brutal-input w-full p-2.5 font-bold text-xs uppercase rounded-none focus:outline-none" 
           />
         </div>
 
         <div>
-          <label class="block font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Aspect Ratio</label>
-          <select name="aspect_ratio" class="glass-input w-full p-2.5 rounded-xl font-mono text-zinc-900 dark:text-zinc-100 focus:outline-none">
-            <option value="2.39:1">2.39:1 (Anamorphic Scope)</option>
-            <option value="70mm IMAX">70mm IMAX (1.43:1 / 1.90:1)</option>
-            <option value="1.85:1">1.85:1 (Flat Widescreen)</option>
-            <option value="1.37:1">1.37:1 (Academy Ratio)</option>
+          <label class="block font-bold uppercase tracking-wider text-black dark:text-white mb-1">ASPECT RATIO (OPTIONAL)</label>
+          <select name="aspect_ratio" class="brutal-input w-full p-2.5 font-bold text-xs rounded-none focus:outline-none">
+            <option value="2.39:1">2.39:1 (ANAMORPHIC SCOPE)</option>
+            <option value="70mm IMAX">70MM IMAX (1.43:1 / 1.90:1)</option>
+            <option value="1.85:1">1.85:1 (FLAT WIDESCREEN)</option>
+            <option value="1.37:1">1.37:1 (ACADEMY RATIO)</option>
           </select>
         </div>
 
         <div>
-          <label class="block font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Select Image (Movie Still)</label>
-          <div class="rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/30 p-5 text-center hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors">
+          <label class="block font-bold uppercase tracking-wider text-black dark:text-white mb-1">SELECT MOVIE STILL</label>
+          <div class="border-2 border-dashed border-black dark:border-white bg-[#f5f4ef] dark:bg-[#1a1a20] p-4 text-center rounded-none">
             <input 
               type="file" 
               name="frame" 
               accept="image/*" 
               required 
-              class="text-zinc-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-medium file:bg-zinc-900 file:text-white dark:file:bg-white dark:file:text-zinc-900 cursor-pointer" 
+              class="text-zinc-600 dark:text-zinc-300 font-mono text-xs file:mr-4 file:py-1.5 file:px-3 file:border-2 file:border-black file:dark:border-white file:bg-black file:text-white file:dark:bg-white file:dark:text-black file:font-mono file:font-bold file:uppercase file:rounded-none cursor-pointer" 
             />
-            <p class="text-[10px] text-zinc-400 mt-2">Directly uploaded to Catbox.moe • Zero host storage used</p>
+            <p class="text-[10px] text-zinc-500 dark:text-zinc-400 mt-2 uppercase font-mono">
+              DIRECT MULTIPART INGEST TO CATBOX.MOE
+            </p>
           </div>
         </div>
 
         <div class="pt-2 flex justify-end gap-2.5">
-          <button type="button" id="cancelUploadBtn" class="glass-btn px-4 py-2 rounded-xl text-zinc-600 dark:text-zinc-300 font-medium">
-            Cancel
+          <button type="button" id="cancelUploadBtn" class="brutal-btn px-4 py-2 text-xs uppercase font-bold rounded-none">
+            CANCEL
           </button>
-          <button type="submit" id="submitUploadBtn" class="glass-btn-primary px-5 py-2 rounded-xl font-semibold tracking-wide flex items-center gap-2">
-            <span id="uploadBtnText">Upload & Save</span>
+          <button type="submit" id="submitUploadBtn" class="brutal-btn-primary px-6 py-2 text-xs uppercase font-black rounded-none flex items-center gap-2">
+            <span id="uploadBtnText">UPLOAD & PIN</span>
             <span id="uploadSpinner" class="hidden animate-spin">⏳</span>
           </button>
         </div>
@@ -203,31 +208,28 @@ const {
     </div>
   </div>
 
-  <!-- ================= FLOATING GLASS LIGHTBOX MODAL ================= -->
-  <div id="lightboxModal" class="fixed inset-0 bg-black/85 backdrop-blur-xl flex items-center justify-center z-50 hidden p-4 sm:p-8">
+  <!-- ================= NEO-BRUTALIST CINEMA LIGHTBOX ================= -->
+  <div id="lightboxModal" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 hidden p-4 sm:p-6">
     <div class="max-w-5xl w-full flex flex-col items-center" id="lightboxContent">
-      <div class="glass-panel-elevated w-full rounded-2xl shadow-2xl p-3 sm:p-4 border border-white/15 dark:border-white/10">
+      <div class="bg-black border-2 border-white shadow-[8px_8px_0px_#ffffff] w-full p-2 sm:p-4 rounded-none">
         
-        <!-- Cinema Screen Box -->
-        <div class="aspect-[2.39/1] overflow-hidden rounded-xl bg-black flex items-center justify-center relative">
-          <img id="lightboxImg" src="" alt="Cinema Frame" class="max-w-full max-h-[70vh] object-contain rounded-lg" />
+        <!-- Screen Box -->
+        <div class="aspect-[2.39/1] overflow-hidden bg-black flex items-center justify-center border border-zinc-800">
+          <img id="lightboxImg" src="" alt="Cinema Still" class="max-w-full max-h-[72vh] object-contain" />
         </div>
 
-        <!-- Lightbox Footer Controls -->
-        <div class="pt-3.5 pb-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-zinc-900 dark:text-zinc-100">
+        <!-- Brutalist Metadata & Controls -->
+        <div class="pt-3.5 pb-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white font-mono">
           <div>
-            <h4 id="lightboxTitle" class="text-lg sm:text-xl font-bold tracking-tight">Movie Title</h4>
-            <p id="lightboxTime" class="font-mono text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">⏱ 00:00:00</p>
+            <h4 id="lightboxTitle" class="text-base sm:text-lg font-black uppercase tracking-tight">MOVIE TITLE</h4>
+            <p id="lightboxTime" class="text-xs text-[#e2f952] font-bold mt-0.5">⏱ 00:00:00</p>
           </div>
           <div class="flex items-center gap-2.5">
-            <button id="lightboxCopyBtn" class="glass-btn px-4 py-2 rounded-xl font-mono text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white flex items-center gap-1.5">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
-              <span>Copy Catbox URL</span>
+            <button id="lightboxCopyBtn" class="brutal-btn px-3.5 py-1.5 text-xs uppercase font-bold rounded-none flex items-center gap-1.5">
+              <span>COPY CATBOX URL</span>
             </button>
-            <button id="closeLightboxBtn" class="glass-btn-primary px-4 py-2 rounded-xl text-xs font-semibold">
-              Close [ESC]
+            <button id="closeLightboxBtn" class="brutal-btn-primary px-4 py-1.5 text-xs uppercase font-black rounded-none">
+              CLOSE [ESC]
             </button>
           </div>
         </div>
@@ -236,10 +238,10 @@ const {
     </div>
   </div>
 
-  <!-- ================= GLASS PILL TOAST NOTIFICATION ================= -->
-  <div id="toast" class="glass-panel-elevated rounded-full px-5 py-2.5 text-xs font-medium text-zinc-900 dark:text-zinc-100 shadow-2xl fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-2 border border-white/60 dark:border-white/15">
-    <span class="text-emerald-500 font-bold">✓</span>
-    <span id="toastMsg">Notification message</span>
+  <!-- ================= BRUTALIST PILL TOAST ================= -->
+  <div id="toast" class="brutal-card-accent px-4 py-2 text-xs font-mono font-black fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-150 flex items-center gap-2 border-2 border-black shadow-[4px_4px_0px_#000]">
+    <span class="text-black">✓</span>
+    <span id="toastMsg" class="uppercase">NOTIFICATION MESSAGE</span>
   </div>
 
   <!-- ================= CLIENT SCRIPTS ================= -->
@@ -272,12 +274,12 @@ const {
       toast.classList.remove('translate-y-20', 'opacity-0');
       setTimeout(() => {
         toast.classList.add('translate-y-20', 'opacity-0');
-      }, 2800);
+      }, 2500);
     };
 
     window.copyToClipboard = function(text) {
       navigator.clipboard.writeText(text).then(() => {
-        window.showToast('Copied to clipboard: ' + text);
+        window.showToast('COPIED TO CLIPBOARD');
       });
     };
 
@@ -311,7 +313,7 @@ const {
       const spinner = document.getElementById('uploadSpinner');
 
       const formData = new FormData(uploadForm);
-      btnText.textContent = 'Ingesting to Catbox...';
+      btnText.textContent = 'STREAMING...';
       spinner.classList.remove('hidden');
       submitBtn.disabled = true;
 
@@ -323,18 +325,17 @@ const {
         const data = await res.json();
         
         if (res.ok && data.status === 'success') {
-          window.showToast('Frame pinned! Permanent Catbox URL created.');
+          window.showToast('FRAME PINNED TO ARCHIVE');
           hideUploadModal();
           uploadForm.reset();
-          // Reload to show the newly pinned frame
-          setTimeout(() => window.location.reload(), 1200);
+          setTimeout(() => window.location.reload(), 1000);
         } else {
           alert('Upload failed: ' + (data.message || 'Unknown error'));
         }
       } catch (err) {
         alert('Upload failed: ' + err.message);
       } finally {
-        btnText.textContent = 'Upload & Save';
+        btnText.textContent = 'UPLOAD & PIN';
         spinner.classList.add('hidden');
         submitBtn.disabled = false;
       }
@@ -343,14 +344,13 @@ const {
     // Lightbox modal logic
     const lightboxModal = document.getElementById('lightboxModal');
     const closeLightboxBtn = document.getElementById('closeLightboxBtn');
-    const lightboxContent = document.getElementById('lightboxContent');
     let currentLightboxUrl = '';
 
     window.showLightbox = function(url, title, time) {
       currentLightboxUrl = url;
       document.getElementById('lightboxImg').src = url;
       document.getElementById('lightboxTitle').textContent = title;
-      document.getElementById('lightboxTime').textContent = `⏱ Timestamp: ${time}`;
+      document.getElementById('lightboxTime').textContent = `⏱ TIMESTAMP: ${time}`;
       lightboxModal?.classList.remove('hidden');
     };
 
@@ -377,7 +377,7 @@ const {
       }
     });
 
-    // Live TMDB Search Autocomplete
+    // Live Autocomplete (Poster + Title + Year ONLY as requested)
     const searchInput = document.getElementById('globalSearchInput');
     const searchDropdown = document.getElementById('searchDropdown');
     let searchDebounce = null;
@@ -401,43 +401,40 @@ const {
             let typoHeader = '';
             if (data.topMatch && data.topMatch.toLowerCase() !== query.toLowerCase()) {
               typoHeader = `
-                <div class="px-3 py-2 bg-blue-50/80 dark:bg-blue-950/40 rounded-xl mb-1 flex items-center gap-1.5 font-mono text-[11px] text-blue-800 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/40">
-                  <span class="text-blue-500">✦</span>
-                  <span>Typo auto-match: <strong>${data.topMatch}</strong></span>
+                <div class="px-3 py-1.5 bg-[#e2f952] text-black border-2 border-black font-mono font-black text-[11px] uppercase mb-1">
+                  [ AUTO-MATCH: ${data.topMatch} ]
                 </div>
               `;
             }
 
+            // ONLY Poster, Title, Year (no extra descriptions or metadata)
             const listHtml = data.results.map(m => `
-              <a href="/movie/${m.tmdbId}" class="flex items-center gap-3 p-2 rounded-xl hover:bg-zinc-100/80 dark:hover:bg-zinc-800/60 transition-colors group">
+              <a href="/movie/${m.tmdbId}" class="flex items-center gap-3 p-2 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors group">
                 <img 
                   src="${m.posterUrl || 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=150&q=80'}" 
-                  class="w-10 h-14 object-cover rounded-lg border border-black/5 dark:border-white/10 shadow-xs shrink-0" 
+                  class="w-10 h-14 object-cover border-2 border-black dark:border-white shrink-0" 
                 />
                 <div class="flex-1 min-w-0">
-                  <div class="font-medium text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
-                    ${m.title} <span class="font-mono text-[11px] text-zinc-400">(${m.year})</span>
+                  <div class="font-bold text-xs uppercase tracking-tight truncate">
+                    ${m.title}
                   </div>
-                  <div class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
-                    ${m.overview ? m.overview.substring(0, 50) + '...' : 'TMDB #' + m.tmdbId}
+                  <div class="font-mono text-[11px] opacity-75 mt-0.5">
+                    ${m.year}
                   </div>
-                  <span class="inline-block text-[10px] text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-zinc-200 mt-1 uppercase tracking-wider font-mono">
-                    View frames →
-                  </span>
                 </div>
               </a>
             `).join('');
 
             const viewAllFooter = `
-              <a href="/?q=${encodeURIComponent(query)}" class="block mt-1.5 p-2 text-center font-mono text-xs rounded-xl bg-zinc-100/70 dark:bg-zinc-800/60 hover:bg-zinc-200/70 dark:hover:bg-zinc-700/60 text-zinc-700 dark:text-zinc-300 font-medium transition-colors">
-                View all poster results on full page →
+              <a href="/?q=${encodeURIComponent(query)}" class="block mt-1 p-2 text-center font-mono text-xs uppercase font-black bg-black text-white dark:bg-white dark:text-black hover:bg-[#e2f952] hover:text-black dark:hover:bg-[#e2f952] dark:hover:text-black transition-colors">
+                VIEW ALL RESULTS →
               </a>
             `;
 
             searchDropdown.innerHTML = typoHeader + listHtml + viewAllFooter;
             searchDropdown.classList.remove('hidden');
           } else {
-            searchDropdown.innerHTML = `<div class="p-4 text-xs font-mono text-zinc-400 text-center">No movies found for "${query}".</div>`;
+            searchDropdown.innerHTML = `<div class="p-3 text-xs font-mono text-center uppercase font-bold text-zinc-500">NO TITLES FOUND</div>`;
             searchDropdown.classList.remove('hidden');
           }
         } catch (err) {

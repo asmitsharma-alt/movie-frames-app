@@ -2,269 +2,222 @@
 
 @layer base {
   :root {
-    --bg-primary: #f8fafc;
-    --text-primary: #09090b;
-    --text-secondary: #71717a;
+    --bg-main: #f5f4ef;
+    --text-main: #0a0a0a;
+    --border-main: #000000;
+    --shadow-main: #000000;
+    --accent-yellow: #e2f952;
+    --accent-red: #ff3b30;
   }
   .dark {
-    --bg-primary: #09090b;
-    --text-primary: #fafafa;
-    --text-secondary: #a1a1aa;
+    --bg-main: #0d0d0f;
+    --text-main: #f5f5f5;
+    --border-main: #ffffff;
+    --shadow-main: #ffffff;
+    --accent-yellow: #e2f952;
+    --accent-red: #ff3b30;
   }
 
   body {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 }
 
 /* ==========================================================================
-   NEOBLURISM AMBIENT CANVAS
-   Multi-stop subtle ambient mesh that refracts through frosted glass surfaces
+   NEO-BRUTALIST STRUCTURAL TOKENS
+   Thick borders, hard offset shadows, zero soft blurs, mechanical feedback
    ========================================================================== */
-.neoblur-canvas {
-  background-color: #f8fafc;
-  background-image: 
-    radial-gradient(ellipse 60% 40% at 10% 10%, rgba(224, 231, 255, 0.5) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 50% at 90% 15%, rgba(243, 232, 255, 0.45) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 60% at 50% 85%, rgba(226, 232, 240, 0.5) 0%, transparent 70%);
-  background-attachment: fixed;
+
+/* Cards */
+.brutal-card {
+  background-color: #ffffff;
+  border: 2px solid #000000;
+  box-shadow: 4px 4px 0px #000000;
+  transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.15s cubic-bezier(0.2, 0, 0, 1);
 }
 
-.dark .neoblur-canvas {
-  background-color: #09090b;
-  background-image: 
-    radial-gradient(ellipse 60% 40% at 10% 10%, rgba(30, 41, 59, 0.35) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 50% at 90% 15%, rgba(24, 24, 35, 0.4) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 60% at 50% 85%, rgba(15, 23, 42, 0.35) 0%, transparent 70%);
-  background-attachment: fixed;
+.dark .brutal-card {
+  background-color: #141417;
+  border: 2px solid #ffffff;
+  box-shadow: 4px 4px 0px #ffffff;
 }
 
-/* ==========================================================================
-   NEOBLURISM SURFACES & CARDS
-   Semi-transparent frosted glass with subtle bevels and multi-tier drop shadows
-   ========================================================================== */
-.glass-card {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  box-shadow: 
-    0 1px 2px 0 rgba(0, 0, 0, 0.02),
-    0 8px 24px -4px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.95);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+.brutal-card-hover:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 7px 7px 0px #000000;
 }
 
-.dark .glass-card {
-  background: rgba(18, 18, 24, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 
-    0 1px 2px 0 rgba(0, 0, 0, 0.3),
-    0 10px 30px -4px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+.dark .brutal-card-hover:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 7px 7px 0px #ffffff;
 }
 
-.glass-card-hover:hover {
-  transform: translateY(-4px);
-  background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(255, 255, 255, 0.95);
-  box-shadow: 
-    0 4px 8px 0 rgba(0, 0, 0, 0.03),
-    0 20px 36px -6px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 0 rgba(255, 255, 255, 1);
+.brutal-card-hover:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px #000000;
 }
 
-.dark .glass-card-hover:hover {
-  transform: translateY(-4px);
-  background: rgba(24, 24, 32, 0.82);
-  border-color: rgba(255, 255, 255, 0.14);
-  box-shadow: 
-    0 4px 8px 0 rgba(0, 0, 0, 0.4),
-    0 24px 44px -6px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+.dark .brutal-card-hover:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px #ffffff;
 }
 
-/* ==========================================================================
-   ELEVATED GLASS PANELS (Navbar, Modals, Lightbox, Dropdowns)
-   ========================================================================== */
-.glass-panel-elevated {
-  background: rgba(255, 255, 255, 0.84);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  box-shadow: 
-    0 12px 36px -8px rgba(0, 0, 0, 0.07),
-    0 1px 3px 0 rgba(0, 0, 0, 0.02),
-    inset 0 1px 0 0 rgba(255, 255, 255, 1);
+/* Accent Card (Acid Yellow) */
+.brutal-card-accent {
+  background-color: #e2f952;
+  color: #000000;
+  border: 2px solid #000000;
+  box-shadow: 4px 4px 0px #000000;
 }
 
-.dark .glass-panel-elevated {
-  background: rgba(18, 18, 23, 0.84);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 
-    0 16px 40px -8px rgba(0, 0, 0, 0.6),
-    0 1px 3px 0 rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+/* Buttons */
+.brutal-btn {
+  background-color: #ffffff;
+  color: #000000;
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0px #000000;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  transition: transform 0.1s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.1s cubic-bezier(0.2, 0, 0, 1), background-color 0.1s;
 }
 
-/* ==========================================================================
-   NEOBLUR BUTTONS & CONTROLS
-   Soft tactile depth with active haptic bounce
-   ========================================================================== */
-.glass-btn {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 
-    0 1px 2px rgba(0, 0, 0, 0.02),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.glass-btn:hover {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(0, 0, 0, 0.1);
-  box-shadow: 
-    0 4px 12px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
-  transform: translateY(-1px);
-}
-
-.glass-btn:active {
-  transform: translateY(0px) scale(0.97);
-}
-
-.dark .glass-btn {
-  background: rgba(28, 28, 35, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 
-    0 1px 2px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-
-.dark .glass-btn:hover {
-  background: rgba(36, 36, 45, 0.9);
-  border-color: rgba(255, 255, 255, 0.16);
-  box-shadow: 
-    0 4px 14px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-.dark .glass-btn:active {
-  transform: translateY(0px) scale(0.97);
-}
-
-/* Primary Glass Button */
-.glass-btn-primary {
-  background: #18181b;
+.dark .brutal-btn {
+  background-color: #1a1a1f;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.1),
-    0 6px 16px -2px rgba(0, 0, 0, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 2px solid #ffffff;
+  box-shadow: 3px 3px 0px #ffffff;
 }
 
-.glass-btn-primary:hover {
-  background: #27272a;
-  box-shadow: 
-    0 4px 8px rgba(0, 0, 0, 0.14),
-    0 10px 22px -2px rgba(0, 0, 0, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  transform: translateY(-1px);
+.brutal-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px #000000;
+  background-color: #f4f4f0;
 }
 
-.glass-btn-primary:active {
-  transform: translateY(0px) scale(0.97);
+.dark .brutal-btn:hover {
+  box-shadow: 5px 5px 0px #ffffff;
+  background-color: #26262d;
 }
 
-.dark .glass-btn-primary {
-  background: #ffffff;
-  color: #09090b;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 
-    0 2px 6px rgba(0, 0, 0, 0.3),
-    0 8px 18px -2px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+.brutal-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px #000000;
 }
 
-.dark .glass-btn-primary:hover {
-  background: #f4f4f5;
-  box-shadow: 
-    0 4px 10px rgba(255, 255, 255, 0.15),
-    0 10px 24px -2px rgba(0, 0, 0, 0.45);
-  transform: translateY(-1px);
+.dark .brutal-btn:active {
+  box-shadow: 0px 0px 0px #ffffff;
 }
 
-/* ==========================================================================
-   GLASS INPUTS
-   ========================================================================== */
-.glass-input {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
-  transition: all 0.2s ease;
+/* Primary Action Button (Solid Black / Acid Accent) */
+.brutal-btn-primary {
+  background-color: #000000;
+  color: #ffffff;
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0px #000000;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.1s ease;
 }
 
-.glass-input:focus {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(24, 24, 27, 0.25);
-  box-shadow: 
-    0 0 0 3px rgba(24, 24, 27, 0.06),
-    inset 0 1px 2px rgba(0, 0, 0, 0.02);
+.brutal-btn-primary:hover {
+  background-color: #e2f952;
+  color: #000000;
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px #000000;
 }
 
-.dark .glass-input {
-  background: rgba(18, 18, 23, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+.dark .brutal-btn-primary {
+  background-color: #ffffff;
+  color: #000000;
+  border: 2px solid #ffffff;
+  box-shadow: 3px 3px 0px #ffffff;
 }
 
-.dark .glass-input:focus {
-  background: rgba(24, 24, 30, 0.9);
-  border-color: rgba(255, 255, 255, 0.25);
-  box-shadow: 
-    0 0 0 3px rgba(255, 255, 255, 0.06),
-    inset 0 1px 2px rgba(0, 0, 0, 0.2);
+.dark .brutal-btn-primary:hover {
+  background-color: #e2f952;
+  color: #000000;
+  border-color: #e2f952;
+  box-shadow: 5px 5px 0px #ffffff;
 }
 
-/* ==========================================================================
-   GLASS PILL BADGES
-   ========================================================================== */
-.glass-pill {
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+.brutal-btn-primary:active,
+.dark .brutal-btn-primary:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px transparent;
 }
 
-.dark .glass-pill {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+/* Inputs */
+.brutal-input {
+  background-color: #ffffff;
+  color: #000000;
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0px #000000;
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
-/* Scrollbar styling */
+.dark .brutal-input {
+  background-color: #141418;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  box-shadow: 3px 3px 0px #ffffff;
+}
+
+.brutal-input:focus {
+  outline: none;
+  background-color: #ffffff;
+  box-shadow: 5px 5px 0px #000000;
+  transform: translate(-1px, -1px);
+}
+
+.dark .brutal-input:focus {
+  background-color: #1c1c22;
+  box-shadow: 5px 5px 0px #ffffff;
+}
+
+/* Badges & Tags */
+.brutal-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.5rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1.5px solid #000000;
+  background-color: #f5f4ef;
+  color: #000000;
+}
+
+.dark .brutal-tag {
+  border-color: #ffffff;
+  background-color: #1e1e24;
+  color: #ffffff;
+}
+
+.brutal-tag-accent {
+  background-color: #e2f952;
+  color: #000000;
+  border: 1.5px solid #000000;
+}
+
+/* Custom crisp scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--bg-main);
+  border-left: 2px solid var(--border-main);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(161, 161, 170, 0.4);
-  border-radius: 9999px;
+  background: #000000;
+  border: 1px solid var(--bg-main);
 }
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(161, 161, 170, 0.7);
+.dark ::-webkit-scrollbar-thumb {
+  background: #ffffff;
 }
