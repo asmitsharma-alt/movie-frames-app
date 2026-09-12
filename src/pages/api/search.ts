@@ -21,6 +21,7 @@ export const GET: APIRoute = async ({ url }) => {
   return new Response(JSON.stringify({
     status: 'success',
     query,
+    topMatch: results[0]?.title || null,
     total: results.length,
     results
   }), {

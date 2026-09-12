@@ -56,6 +56,12 @@ const featuredMovies = [
           <h1 class="font-serif text-4xl sm:text-5xl text-stone-950 dark:text-stone-100 tracking-tight">
             Results for <span class="italic font-serif">"{searchQuery}"</span>
           </h1>
+          {searchResults && searchResults.length > 0 && searchResults[0].title.toLowerCase() !== searchQuery.toLowerCase() && (
+            <div class="inline-flex items-center gap-2 mt-2 px-3 py-1 bg-amber-100/80 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800/60 rounded-xs font-mono text-xs text-amber-900 dark:text-amber-300">
+              <span>✦</span>
+              <span>Typo auto-match: Top result is <strong>{searchResults[0].title}</strong> ({searchResults[0].year})</span>
+            </div>
+          )}
           <p class="font-mono text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1">
             Found {searchResults ? searchResults.length : 0} titles. Click any movie poster to open its 35mm Polaroid frame collection.
           </p>

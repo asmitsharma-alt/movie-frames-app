@@ -1,6 +1,7 @@
 import type { MovieInfo } from './types';
+import { generateCandidateQueries, computeMovieMatchScore, POPULAR_CINEMA_MAP } from './fuzzy-search';
 
-// Pre-seeded database for when no TMDB key is configured yet
+// Pre-seeded database for when no TMDB key is configured or offline
 const FALLBACK_MOVIES: Record<string, MovieInfo> = {
   '157336': {
     tmdbId: '157336',
@@ -61,73 +62,160 @@ const FALLBACK_MOVIES: Record<string, MovieInfo> = {
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/fm6KqXpk3M2HVveHwCrBSSBaO0V.jpg',
     overview: 'The story of J. Robert Oppenheimer\'s role in the development of the atomic bomb during World War II.',
     aspectRatio: '2.20:1 / 70mm IMAX'
+  },
+  '550': {
+    tmdbId: '550',
+    title: 'Fight Club',
+    year: '1999',
+    director: 'David Fincher',
+    posterUrl: 'https://image.tmdb.org/t/p/w500/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg',
+    backdropUrl: 'https://image.tmdb.org/t/p/w1280/hZkgoQYus5vegHoetLkCJzb17zJ.jpg',
+    overview: 'A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy.',
+    aspectRatio: '2.39:1 Super 35'
+  },
+  '680': {
+    tmdbId: '680',
+    title: 'Pulp Fiction',
+    year: '1994',
+    director: 'Quentin Tarantino',
+    posterUrl: 'https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg',
+    backdropUrl: 'https://image.tmdb.org/t/p/w1280/suaEOtk1N1sgg2MTM7oZd2cfVp3.jpg',
+    overview: 'A burger-loving hit man, his philosophical partner, a drug-addled gangster\'s moll and a washed-up boxer converge in four tales of violence and redemption.',
+    aspectRatio: '2.35:1 Panavision'
+  },
+  '155': {
+    tmdbId: '155',
+    title: 'The Dark Knight',
+    year: '2008',
+    director: 'Christopher Nolan',
+    posterUrl: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
+    backdropUrl: 'https://image.tmdb.org/t/p/w1280/nMKdUUepR0i5zn0y1T4CsSB5chy.jpg',
+    overview: 'Batman raises the stakes in his war on crime with the help of Lt. Jim Gordon and District Attorney Harvey Dent.',
+    aspectRatio: '2.39:1 / 70mm IMAX'
+  },
+  '603': {
+    tmdbId: '603',
+    title: 'The Matrix',
+    year: '1999',
+    director: 'The Wachowskis',
+    posterUrl: 'https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg',
+    backdropUrl: 'https://image.tmdb.org/t/p/w1280/l4QHerTSbflqI9ifnvSTqW5WwI.jpg',
+    overview: 'Set in the 22nd century, The Matrix tells the story of a computer hacker who joins a group of underground insurgents fighting the vast and powerful computers.',
+    aspectRatio: '2.39:1 Panavision'
+  },
+  '98': {
+    tmdbId: '98',
+    title: 'Gladiator',
+    year: '2000',
+    director: 'Ridley Scott',
+    posterUrl: 'https://image.tmdb.org/t/p/w500/ty8TGRuvJLPUmAR1H1nRIsgwvim.jpg',
+    backdropUrl: 'https://image.tmdb.org/t/p/w1280/h7hgtvj0ZpIuh4e4gq9h0W7c7mJ.jpg',
+    overview: 'In the year 180, the death of emperor Marcus Aurelius throws the Roman Empire into turmoil.',
+    aspectRatio: '2.39:1 Super 35'
+  },
+  '11324': {
+    tmdbId: '11324',
+    title: 'Shutter Island',
+    year: '2010',
+    director: 'Martin Scorsese',
+    posterUrl: 'https://image.tmdb.org/t/p/w500/4GDy0PHYX3VRXUtwK5ysagvk2Te.jpg',
+    backdropUrl: 'https://image.tmdb.org/t/p/w1280/cCTScg1uI4g60L46jFkG9tHqT6G.jpg',
+    overview: 'World War II soldier-turned-U.S. Marshal Teddy Daniels investigates the disappearance of a patient from Boston\'s Shutter Island Ashecliffe Hospital.',
+    aspectRatio: '2.39:1 Panavision'
   }
 };
 
 /**
- * Searches TMDB for movies matching the query string
+ * Searches TMDB for movies matching the query string with intelligent typo-tolerance,
+ * phonetic normalization, candidate generation, and popularity re-ranking.
  */
 export async function searchTmdbMovies(query: string, apiKey?: string): Promise<MovieInfo[]> {
-  const cleanQuery = query.trim().toLowerCase();
+  const cleanQuery = query.trim();
   if (!cleanQuery) return [];
 
-  // Helper to query TMDB API
-  const fetchFromTmdb = async (q: string): Promise<MovieInfo[]> => {
-    if (!apiKey) return [];
-    try {
-      const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(q)}&include_adult=false`);
-      if (res.ok) {
-        const data = await res.json();
-        return (data.results || []).slice(0, 8).map((m: any) => ({
+  // Generate typo permutations, phonetic variations, and prefix stems
+  const candidateQueries = generateCandidateQueries(cleanQuery);
+  const candidatesMap = new Map<string, any>();
+
+  if (apiKey) {
+    // Execute search requests in parallel across candidate variations
+    await Promise.all(
+      candidateQueries.map(async (cq) => {
+        try {
+          const res = await fetch(
+            `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(cq)}&include_adult=false`
+          );
+          if (res.ok) {
+            const data = await res.json();
+            for (const m of (data.results || [])) {
+              if (!candidatesMap.has(String(m.id))) {
+                candidatesMap.set(String(m.id), m);
+              }
+            }
+          }
+        } catch (err) {
+          console.warn(`TMDB search error for variation "${cq}":`, err);
+        }
+      })
+    );
+  }
+
+  // If TMDB provided candidates, score and rerank them
+  if (candidatesMap.size > 0) {
+    const scoredList: (MovieInfo & { matchScore: number })[] = [];
+
+    for (const m of candidatesMap.values()) {
+      const hasPoster = Boolean(m.poster_path);
+      const hasYear = Boolean(m.release_date);
+      const popularity = Number(m.popularity) || 0;
+      const voteCount = Number(m.vote_count) || 0;
+
+      const score = computeMovieMatchScore(
+        cleanQuery,
+        m.title || '',
+        popularity,
+        voteCount,
+        hasPoster,
+        hasYear
+      );
+
+      // Only include candidates that meet the quality threshold
+      if (score >= 25) {
+        scoredList.push({
           tmdbId: String(m.id),
           title: m.title,
           year: m.release_date ? m.release_date.split('-')[0] : 'N/A',
           posterUrl: m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : undefined,
           backdropUrl: m.backdrop_path ? `https://image.tmdb.org/t/p/w1280${m.backdrop_path}` : undefined,
-          overview: m.overview
-        }));
+          overview: m.overview,
+          aspectRatio: '35mm Widescreen',
+          matchScore: score
+        });
       }
-    } catch (err) {
-      console.warn('TMDB API fetch error:', err);
-    }
-    return [];
-  };
-
-  // 1. Try exact search first
-  let results = await fetchFromTmdb(cleanQuery);
-
-  // 2. If 0 results, apply typo tolerance & stemming
-  if (results.length === 0 && apiKey) {
-    const typoMap: Record<string, string> = {
-      'intersteller': 'interstellar',
-      'oppenhimer': 'oppenheimer',
-      'oppenhiemer': 'oppenheimer',
-      'spiderman': 'spider-man',
-      'bat man': 'batman',
-      'avangers': 'avengers',
-      'avanger': 'avengers',
-      'shawshank': 'shawshank redemption'
-    };
-
-    if (typoMap[cleanQuery]) {
-      results = await fetchFromTmdb(typoMap[cleanQuery]);
     }
 
-    // Try prefix / stem (e.g. "intersteller" -> "interstell")
-    if (results.length === 0 && cleanQuery.length > 5) {
-      const stem = cleanQuery.slice(0, -2);
-      results = await fetchFromTmdb(stem);
+    // Sort descending: highest relevance + popularity first
+    scoredList.sort((a, b) => b.matchScore - a.matchScore);
+
+    if (scoredList.length > 0) {
+      return scoredList.slice(0, 12);
     }
   }
 
-  if (results.length > 0) return results;
+  // Fallback: Score against offline curated catalog if offline or 0 TMDB matches
+  const offlineScored: (MovieInfo & { matchScore: number })[] = [];
+  for (const movie of Object.values(FALLBACK_MOVIES)) {
+    const score = computeMovieMatchScore(cleanQuery, movie.title, 50, 20000, true, true);
+    if (score >= 25) {
+      offlineScored.push({
+        ...movie,
+        matchScore: score
+      });
+    }
+  }
 
-  // 3. Fallback search over curated offline catalog
-  return Object.values(FALLBACK_MOVIES).filter(m => 
-    m.title.toLowerCase().includes(cleanQuery) || 
-    (cleanQuery.length > 5 && m.title.toLowerCase().includes(cleanQuery.slice(0, -2))) ||
-    (m.director && m.director.toLowerCase().includes(cleanQuery))
-  );
+  offlineScored.sort((a, b) => b.matchScore - a.matchScore);
+  return offlineScored;
 }
 
 /**

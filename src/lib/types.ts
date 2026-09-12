@@ -16,6 +16,7 @@ export interface MovieInfo {
   backdropUrl?: string;
   overview?: string;
   aspectRatio?: string;
+  matchScore?: number;
 }
 
 export interface MovieFramesResponse {

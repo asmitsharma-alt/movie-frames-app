@@ -375,6 +375,16 @@ const {
           const data = await res.json();
 
           if (data.results && data.results.length > 0) {
+            let typoHeader = '';
+            if (data.topMatch && data.topMatch.toLowerCase() !== query.toLowerCase()) {
+              typoHeader = `
+                <div class="px-3 py-1.5 bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-900/50 flex items-center gap-1.5 font-mono text-[11px] text-amber-900 dark:text-amber-300">
+                  <span>✦</span>
+                  <span>Typo auto-match: <strong>${data.topMatch}</strong></span>
+                </div>
+              `;
+            }
+
             const listHtml = data.results.map(m => `
               <a href="/movie/${m.tmdbId}" class="flex items-center gap-3 p-3 hover:bg-stone-200 dark:hover:bg-stone-800 transition-colors group">
                 <img 
@@ -401,7 +411,7 @@ const {
               </a>
             `;
 
-            searchDropdown.innerHTML = listHtml + viewAllFooter;
+            searchDropdown.innerHTML = typoHeader + listHtml + viewAllFooter;
             searchDropdown.classList.remove('hidden');
           } else {
             searchDropdown.innerHTML = `<div class="p-4 text-xs font-mono text-stone-500 text-center">No movies found for "${query}".</div>`;
