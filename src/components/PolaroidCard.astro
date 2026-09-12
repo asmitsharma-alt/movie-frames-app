@@ -7,39 +7,52 @@ interface Props {
   index: number;
 }
 
-const { frame, movieTitle, index } = Astro.props;
-
-// Staggered natural physical tilts for the scrapbook pinboard effect
-const rotations = ['-rotate-1.5', 'rotate-2', '-rotate-1', 'rotate-1.5', '-rotate-2', 'rotate-1'];
-const rotationClass = rotations[index % rotations.length];
+const { frame, movieTitle } = Astro.props;
 ---
 
-<div class="relative group cursor-pointer" onclick={`showLightbox('${frame.url}', '${movieTitle.replace(/'/g, "\\'")} — ${(frame.tag || 'Film Still').replace(/'/g, "\\'")}', '${frame.timestamp}')`}>
-  <!-- Washi tape at the top -->
-  <div class="washi-tape"></div>
-
-  <!-- Polaroid Paper Card -->
-  <div class={`polaroid-card rounded-xs transform ${rotationClass} transition-all duration-300`}>
+<div 
+  class="group cursor-pointer h-full" 
+  onclick={`showLightbox('${frame.url}', '${movieTitle.replace(/'/g, "\\'")} — ${(frame.tag || 'Film Still').replace(/'/g, "\\'")}', '${frame.timestamp}')`}
+  role="button"
+  tabindex="0"
+  aria-label={`View frame at ${frame.timestamp}`}
+>
+  <!-- NeoBlur Glass Card -->
+  <div class="glass-card glass-card-hover rounded-2xl p-3 h-full flex flex-col justify-between">
     
-    <!-- Movie Frame Still (Cinema 2.39:1 Ratio) -->
-    <div class="aspect-[2.39/1] overflow-hidden bg-stone-900 relative">
+    <!-- Cinema Still (2.39:1 Ratio) -->
+    <div class="aspect-[2.39/1] overflow-hidden rounded-xl bg-zinc-950 relative border border-black/5 dark:border-white/10 shadow-xs">
       <img 
         src={frame.url} 
         alt={`${movieTitle} frame at ${frame.timestamp}`} 
         loading="lazy"
-        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 grayscale contrast-125 group-hover:grayscale-0"
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
       />
-      <span class="absolute bottom-2 left-2 px-1.5 py-0.5 bg-black/75 text-white font-mono text-[9px] uppercase tracking-wider backdrop-blur-xs">
+      
+      <!-- Aspect Ratio Badge -->
+      <span class="absolute top-2 left-2 px-2 py-0.5 rounded-md backdrop-blur-md bg-black/50 border border-white/15 text-white/90 font-mono text-[10px] tracking-wide">
         {frame.aspectRatio || '35mm'}
       </span>
+
+      <!-- Hover Quick Action Indicator -->
+      <div class="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 backdrop-blur-[1px] transition-all duration-300 flex items-center justify-center">
+        <span class="px-3 py-1.5 rounded-xl backdrop-blur-md bg-white/20 dark:bg-black/50 border border-white/30 text-white text-xs font-medium tracking-wide shadow-lg flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+          </svg>
+          <span>Expand</span>
+        </span>
+      </div>
     </div>
 
-    <!-- Thick Polaroid Chin -->
-    <div class="pt-3 pb-1 flex items-center justify-between text-stone-900 dark:text-stone-900">
-      <div>
-        <p class="font-mono text-xs font-bold tracking-wider">⏱ {frame.timestamp}</p>
-        <p class="font-mono text-[10px] text-stone-500 truncate max-w-[170px] sm:max-w-[210px]">
-          "{frame.tag || 'Archived Still'}"
+    <!-- Metadata & Actions -->
+    <div class="pt-3 px-1 flex items-center justify-between gap-3 text-zinc-900 dark:text-zinc-100">
+      <div class="min-w-0">
+        <p class="font-mono text-xs font-semibold tracking-wider text-zinc-800 dark:text-zinc-200">
+          ⏱ {frame.timestamp}
+        </p>
+        <p class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate max-w-[180px] sm:max-w-[220px] mt-0.5">
+          {frame.tag || 'Film Still'}
         </p>
       </div>
 
@@ -47,10 +60,13 @@ const rotationClass = rotations[index % rotations.length];
       <button 
         type="button"
         onclick={`event.stopPropagation(); copyToClipboard('${frame.url}');`}
-        class="font-mono text-[10px] border border-stone-400 dark:border-stone-500 px-2 py-1 uppercase tracking-wider hover:bg-stone-900 hover:text-white dark:hover:bg-stone-900 dark:hover:text-white transition-colors"
-        title="Copy direct Catbox CDN link"
+        class="glass-btn px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1 shrink-0"
+        title="Copy direct Catbox link"
       >
-        [🔗 API]
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        </svg>
+        <span>Link</span>
       </button>
     </div>
 

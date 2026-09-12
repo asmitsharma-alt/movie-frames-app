@@ -6,53 +6,51 @@ interface Props {
   index: number;
 }
 
-const { movie, index } = Astro.props;
-
-// Natural physical tilts for scrapbook lobby cards
-const rotations = ['-rotate-1', 'rotate-1.5', '-rotate-2', 'rotate-1', '-rotate-1.5', 'rotate-2'];
-const rotationClass = rotations[index % rotations.length];
+const { movie } = Astro.props;
 ---
 
 <a 
   href={`/movie/${movie.tmdbId}`}
-  class="relative group block"
+  class="group block h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-2xl"
 >
-  <!-- Washi tape at the top -->
-  <div class="washi-tape"></div>
-
-  <!-- Polaroid Lobby Card -->
-  <div class={`polaroid-card rounded-xs transform ${rotationClass} transition-all duration-300 group-hover:rotate-0 group-hover:-translate-y-2 group-hover:shadow-2xl`}>
+  <!-- NeoBlur Glass Card Container -->
+  <div class="glass-card glass-card-hover rounded-2xl p-3 h-full flex flex-col justify-between">
     
     <!-- 2:3 Movie Poster Frame -->
-    <div class="aspect-[2/3] overflow-hidden bg-stone-900 relative rounded-xs border border-stone-200 dark:border-stone-800">
+    <div class="aspect-[2/3] overflow-hidden rounded-xl bg-zinc-900 relative shadow-xs border border-black/5 dark:border-white/10">
       <img 
         src={movie.posterUrl || 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=500&q=80'} 
         alt={`${movie.title} Poster`} 
         loading="lazy"
-        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
       />
-      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-        <span class="font-mono text-xs text-white uppercase tracking-wider bg-stone-900/90 px-3 py-1.5 border border-white/20">
-          🎞 Click to View Frames →
+      
+      <!-- Frosted Glass Hover Overlay CTA -->
+      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3.5">
+        <span class="w-full text-center py-2 px-3 rounded-xl backdrop-blur-md bg-white/20 dark:bg-black/40 border border-white/30 text-white text-xs font-medium tracking-wide shadow-lg flex items-center justify-center gap-1.5">
+          <span>View Film Archive</span>
+          <span class="text-xs transition-transform group-hover:translate-x-0.5">→</span>
         </span>
       </div>
     </div>
 
-    <!-- Poster Card Chin -->
-    <div class="pt-3 pb-1 text-stone-900 dark:text-stone-900">
+    <!-- Metadata Row -->
+    <div class="pt-3 px-1">
       <div class="flex items-start justify-between gap-2">
-        <h3 class="font-serif text-lg font-bold tracking-tight leading-tight line-clamp-1 group-hover:text-amber-900 transition-colors">
+        <h3 class="font-semibold text-sm sm:text-base text-zinc-900 dark:text-zinc-100 line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
           {movie.title}
         </h3>
-        <span class="font-mono text-xs text-stone-500 font-bold whitespace-nowrap">
+        <span class="text-[11px] font-mono font-medium px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 whitespace-nowrap">
           {movie.year}
         </span>
       </div>
 
-      <div class="mt-2 pt-2 border-t border-stone-200 flex items-center justify-between font-mono text-[10px] text-stone-600">
-        <span>TMDB #{movie.tmdbId}</span>
-        <span class="stamp-badge px-1.5 py-0.5 border-stone-400 group-hover:border-stone-900 group-hover:bg-stone-900 group-hover:text-white transition-colors">
-          VIEW FRAMES
+      <!-- Action & TMDB ID -->
+      <div class="mt-2.5 pt-2.5 border-t border-zinc-200/50 dark:border-zinc-800/60 flex items-center justify-between text-xs font-mono">
+        <span class="text-[11px] text-zinc-400 dark:text-zinc-500">#{movie.tmdbId}</span>
+        <span class="text-[11px] font-medium text-zinc-600 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white flex items-center gap-1">
+          <span>Frames</span>
+          <span class="transition-transform group-hover:translate-x-0.5">→</span>
         </span>
       </div>
     </div>
