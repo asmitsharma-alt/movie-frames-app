@@ -3,16 +3,18 @@ import Layout from '../layouts/Layout.astro';
 import PolaroidCard from '../components/PolaroidCard.astro';
 import { getFramesForMovie } from '../lib/storage';
 import { getTmdbMovieDetails } from '../lib/tmdb';
+import { getAppEnv } from '../lib/env';
 
 export const prerender = false;
 
 // Default to Interstellar (157336) or from query param
 const currentId = Astro.url.searchParams.get('id') || '157336';
-const apiKey = (Astro.locals?.runtime?.env as any)?.TMDB_API_KEY || process.env.TMDB_API_KEY;
+const appEnv = getAppEnv();
+const apiKey = appEnv?.TMDB_API_KEY || (typeof process !== 'undefined' ? process.env?.TMDB_API_KEY : undefined);
 
 const [movie, frames] = await Promise.all([
   getTmdbMovieDetails(currentId, apiKey),
-  getFramesForMovie(currentId, Astro.locals)
+  getFramesForMovie(currentId)
 ]);
 
 const featuredMovies = [

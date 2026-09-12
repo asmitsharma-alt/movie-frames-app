@@ -1,6 +1,5 @@
 import type { Frame } from './types';
-import fs from 'node:fs';
-import path from 'node:path';
+import { getAppEnv } from './env';
 
 // Pre-seeded high quality movie frames for demonstration
 const INITIAL_DEMO_FRAMES: Record<string, Frame[]> = {
@@ -86,18 +85,19 @@ let memoryCache: Record<string, Frame[]> = { ...INITIAL_DEMO_FRAMES };
  * Retrieves frames for a specific TMDB Movie ID.
  * Reads from Cloudflare KV if present, otherwise uses dev cache.
  */
-export async function getFramesForMovie(tmdbId: string, locals?: any): Promise<Frame[]> {
-  const kv = locals?.runtime?.env?.FRAMES_KV;
-  
-  if (kv) {
-    try {
+export async function getFramesForMovie(tmdbId: string): Promise<Frame[]> {
+  try {
+    const env = getAppEnv();
+    const kv = env?.FRAMES_KV;
+    
+    if (kv) {
       const data = await kv.get(`movie:${tmdbId}`, { type: 'json' });
       if (data && Array.isArray(data)) {
         return data as Frame[];
       }
-    } catch (err) {
-      console.error('Failed to read from Cloudflare KV:', err);
     }
+  } catch (err) {
+    console.error('Failed to read from Cloudflare KV:', err);
   }
 
   // Fallback to local memory/demo store
@@ -108,18 +108,19 @@ export async function getFramesForMovie(tmdbId: string, locals?: any): Promise<F
  * Saves a new frame under the TMDB Movie ID.
  * Writes to Cloudflare KV if present, otherwise updates local store.
  */
-export async function addFrameToMovie(tmdbId: string, frame: Frame, locals?: any): Promise<void> {
-  const kv = locals?.runtime?.env?.FRAMES_KV;
+export async function addFrameToMovie(tmdbId: string, frame: Frame): Promise<void> {
+  try {
+    const env = getAppEnv();
+    const kv = env?.FRAMES_KV;
 
-  if (kv) {
-    try {
+    if (kv) {
       const existing = (await kv.get(`movie:${tmdbId}`, { type: 'json' })) || [];
       const updated = Array.isArray(existing) ? [frame, ...existing] : [frame];
       await kv.put(`movie:${tmdbId}`, JSON.stringify(updated));
       return;
-    } catch (err) {
-      console.error('Failed to write to Cloudflare KV:', err);
     }
+  } catch (err) {
+    console.error('Failed to write to Cloudflare KV:', err);
   }
 
   // Fallback update
@@ -132,17 +133,18 @@ export async function addFrameToMovie(tmdbId: string, frame: Frame, locals?: any
 /**
  * Returns a list of all movie IDs that have stored frames
  */
-export async function getCuratedMovieIds(locals?: any): Promise<string[]> {
-  const kv = locals?.runtime?.env?.FRAMES_KV;
-  if (kv) {
-    try {
+export async function getCuratedMovieIds(): Promise<string[]> {
+  try {
+    const env = getAppEnv();
+    const kv = env?.FRAMES_KV;
+    if (kv) {
       const list = await kv.list({ prefix: 'movie:' });
       if (list && list.keys.length > 0) {
         return list.keys.map((k: { name: string }) => k.name.replace('movie:', ''));
       }
-    } catch (err) {
-      console.error('Failed to list keys from Cloudflare KV:', err);
     }
+  } catch (err) {
+    console.error('Failed to list keys from Cloudflare KV:', err);
   }
 
   return Object.keys(memoryCache);

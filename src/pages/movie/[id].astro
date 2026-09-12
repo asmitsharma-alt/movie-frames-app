@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import PolaroidCard from '../../components/PolaroidCard.astro';
 import { getFramesForMovie } from '../../lib/storage';
 import { getTmdbMovieDetails } from '../../lib/tmdb';
+import { getAppEnv } from '../../lib/env';
 
 export const prerender = false;
 
@@ -11,11 +12,12 @@ if (!id) {
   return Astro.redirect('/');
 }
 
-const apiKey = (Astro.locals?.runtime?.env as any)?.TMDB_API_KEY || process.env.TMDB_API_KEY;
+const appEnv = getAppEnv();
+const apiKey = appEnv?.TMDB_API_KEY || (typeof process !== 'undefined' ? process.env?.TMDB_API_KEY : undefined);
 
 const [movie, frames] = await Promise.all([
   getTmdbMovieDetails(id, apiKey),
-  getFramesForMovie(id, Astro.locals)
+  getFramesForMovie(id)
 ]);
 ---
 

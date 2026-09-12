@@ -1,13 +1,23 @@
 {
 	"$schema": "./node_modules/wrangler/config-schema.json",
 	"compatibility_date": "2026-09-11",
-	"compatibility_flags": ["global_fetch_strictly_public"],
+	"compatibility_flags": ["nodejs_compat"],
 	"name": "movie-frames-app",
 	"main": "@astrojs/cloudflare/entrypoints/server",
 	"assets": {
 		"directory": "./dist",
 		"binding": "ASSETS"
 	},
+	"kv_namespaces": [
+		{
+			"binding": "FRAMES_KV",
+			"id": "ce7d6536dc74489d94652b6ba2820cf9"
+		},
+		{
+			"binding": "SESSION",
+			"id": "bde867a3ca8d4fb29348d30c04aed252"
+		}
+	],
 	"observability": {
 		"enabled": true
 	}

@@ -48,7 +48,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     };
 
     // 3. Save into Cloudflare KV (or local dev storage)
-    await addFrameToMovie(tmdbId, newFrame, locals);
+    await addFrameToMovie(tmdbId, newFrame);
 
     return new Response(JSON.stringify({
       status: 'success',
