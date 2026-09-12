@@ -71,10 +71,11 @@ export async function searchTmdbMovies(query: string, apiKey?: string): Promise<
   const cleanQuery = query.trim().toLowerCase();
   if (!cleanQuery) return [];
 
-  // If real TMDB key is provided, query the real TMDB API
-  if (apiKey) {
+  // Helper to query TMDB API
+  const fetchFromTmdb = async (q: string): Promise<MovieInfo[]> => {
+    if (!apiKey) return [];
     try {
-      const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(cleanQuery)}&include_adult=false`);
+      const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(q)}&include_adult=false`);
       if (res.ok) {
         const data = await res.json();
         return (data.results || []).slice(0, 8).map((m: any) => ({
@@ -87,13 +88,44 @@ export async function searchTmdbMovies(query: string, apiKey?: string): Promise<
         }));
       }
     } catch (err) {
-      console.warn('TMDB API fetch error, falling back to local catalog:', err);
+      console.warn('TMDB API fetch error:', err);
+    }
+    return [];
+  };
+
+  // 1. Try exact search first
+  let results = await fetchFromTmdb(cleanQuery);
+
+  // 2. If 0 results, apply typo tolerance & stemming
+  if (results.length === 0 && apiKey) {
+    const typoMap: Record<string, string> = {
+      'intersteller': 'interstellar',
+      'oppenhimer': 'oppenheimer',
+      'oppenhiemer': 'oppenheimer',
+      'spiderman': 'spider-man',
+      'bat man': 'batman',
+      'avangers': 'avengers',
+      'avanger': 'avengers',
+      'shawshank': 'shawshank redemption'
+    };
+
+    if (typoMap[cleanQuery]) {
+      results = await fetchFromTmdb(typoMap[cleanQuery]);
+    }
+
+    // Try prefix / stem (e.g. "intersteller" -> "interstell")
+    if (results.length === 0 && cleanQuery.length > 5) {
+      const stem = cleanQuery.slice(0, -2);
+      results = await fetchFromTmdb(stem);
     }
   }
 
-  // Fallback search over curated offline catalog
+  if (results.length > 0) return results;
+
+  // 3. Fallback search over curated offline catalog
   return Object.values(FALLBACK_MOVIES).filter(m => 
     m.title.toLowerCase().includes(cleanQuery) || 
+    (cleanQuery.length > 5 && m.title.toLowerCase().includes(cleanQuery.slice(0, -2))) ||
     (m.director && m.director.toLowerCase().includes(cleanQuery))
   );
 }
