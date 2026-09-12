@@ -8,12 +8,6 @@
 		"directory": "./dist",
 		"binding": "ASSETS"
 	},
-	"kv_namespaces": [
-		{
-			"binding": "FRAMES_KV",
-			"id": "FRAMES_KV_ID"
-		}
-	],
 	"observability": {
 		"enabled": true
 	}
