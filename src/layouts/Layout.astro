@@ -1,0 +1,402 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { 
+  title = 'Archive.Frame — 35mm Polaroid Cinema Index',
+  description = 'A zero-database community archive of movie frames and cinematography stills, powered by Catbox CDN and Cloudflare KV.'
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="paper-texture min-h-screen text-stone-900 dark:text-stone-100 transition-colors duration-300 font-sans selection:bg-stone-900 selection:text-amber-100">
+
+  <!-- ================= TOP ARCHIVE HEADER ================= -->
+  <header class="border-b border-stone-300/80 dark:border-stone-800/80 bg-stone-100/75 dark:bg-stone-950/75 backdrop-blur-md sticky top-0 z-40 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row items-center justify-between gap-4">
+      
+      <!-- Brand & Index Volume Stamp -->
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="flex flex-col">
+          <div class="flex items-center gap-2">
+            <span class="font-serif text-3xl sm:text-4xl tracking-tight italic font-normal group-hover:text-amber-900 dark:group-hover:text-amber-300 transition-colors">Archive.Frame</span>
+            <span class="stamp-badge text-[10px] font-mono px-1.5 py-0.5 text-stone-600 dark:text-stone-300 border-stone-400 dark:border-stone-600">Vol. 01</span>
+          </div>
+          <p class="font-mono text-[10px] text-stone-500 dark:text-stone-400 tracking-wider">
+            PUBLIC 35MM CINEMATOGRAPHY REPOSITORY • ZERO-DB API
+          </p>
+        </div>
+      </a>
+
+      <!-- Search & Header Actions -->
+      <div class="flex items-center gap-3 w-full md:w-auto relative">
+        
+        <!-- Live TMDB Search Input with Dropdown -->
+        <div class="relative flex-1 md:w-80">
+          <input 
+            type="text" 
+            id="globalSearchInput"
+            placeholder="Search movie catalog..." 
+            autocomplete="off"
+            class="w-full pl-9 pr-4 py-2 text-sm bg-white/90 dark:bg-stone-900/90 border border-stone-300 dark:border-stone-700 rounded-xs font-mono text-stone-800 dark:text-stone-200 placeholder-stone-400 focus:outline-none focus:ring-1 focus:ring-stone-900 dark:focus:ring-stone-400 shadow-xs"
+          />
+          <svg class="w-4 h-4 text-stone-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          
+          <!-- Dropdown Autocomplete Container -->
+          <div id="searchDropdown" class="absolute left-0 right-0 top-full mt-1.5 bg-stone-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 shadow-xl rounded-xs max-h-80 overflow-y-auto hidden z-50 divide-y divide-stone-200 dark:divide-stone-800">
+          </div>
+        </div>
+
+        <!-- Pin A Frame Trigger -->
+        <button 
+          id="openUploadBtn"
+          class="flex items-center gap-1.5 px-3.5 py-2 bg-stone-900 dark:bg-stone-100 text-stone-100 dark:text-stone-900 rounded-xs font-mono text-xs uppercase tracking-wider hover:bg-stone-800 dark:hover:bg-white transition-all shadow-xs active:scale-95 whitespace-nowrap"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          <span>Pin Frame</span>
+        </button>
+
+        <!-- Darkroom / Warm Paper Theme Toggle -->
+        <button 
+          id="themeToggleBtn"
+          title="Toggle Darkroom / Archival Mode"
+          class="p-2 border border-stone-300 dark:border-stone-700 bg-white/80 dark:bg-stone-900/80 rounded-xs text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+        >
+          <span id="themeIcon">🌙</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTENT INJECTION ================= -->
+  <slot />
+
+  <!-- ================= VINTAGE FOOTER ================= -->
+  <footer class="border-t border-stone-300 dark:border-stone-800 mt-20 py-8 text-center font-mono text-xs text-stone-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p>ARCHIVE.FRAME • POWERED BY CATBOX CDN & CLOUDFLARE KV • ZERO-DATABASE ENGINE</p>
+      <div class="flex items-center gap-4">
+        <a href="/api/frames?movie_id=157336" target="_blank" class="hover:underline text-stone-700 dark:text-stone-300">Open Sample API</a>
+        <span>•</span>
+        <p>DATA FROM THE MOVIE DATABASE (TMDB)</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= UPLOAD MODAL ================= -->
+  <div id="uploadModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-4">
+    <div class="bg-stone-100 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 shadow-2xl max-w-lg w-full p-6 sm:p-8 rounded-xs relative">
+      <button id="closeUploadModalBtn" class="absolute top-4 right-4 text-stone-500 hover:text-stone-900 dark:hover:text-white font-mono text-lg">✕</button>
+
+      <div class="border-b border-stone-300 dark:border-stone-700 pb-3 mb-6">
+        <span class="stamp-badge text-[10px] font-mono px-2 py-0.5 text-stone-600 dark:text-stone-300 border-stone-400">CATBOX CDN INGEST</span>
+        <h3 class="font-serif text-3xl mt-2 italic">Pin Frame to Archive</h3>
+      </div>
+
+      <form id="uploadForm" class="space-y-4 font-mono text-xs">
+        <div>
+          <label class="block font-bold mb-1 uppercase tracking-wider text-stone-700 dark:text-stone-300">TMDB Movie ID / Title</label>
+          <input 
+            type="text" 
+            name="tmdb_id" 
+            id="modalTmdbId" 
+            placeholder="e.g. 157336" 
+            required 
+            class="w-full p-2 bg-white dark:bg-stone-950 border border-stone-300 dark:border-stone-700 rounded-xs focus:ring-1 focus:ring-stone-900 outline-none" 
+          />
+        </div>
+
+        <div>
+          <label class="block font-bold mb-1 uppercase tracking-wider text-stone-700 dark:text-stone-300">Timestamp (HH:MM:SS)</label>
+          <input 
+            type="text" 
+            name="timestamp" 
+            placeholder="e.g. 01:24:15" 
+            required 
+            class="w-full p-2 bg-white dark:bg-stone-950 border border-stone-300 dark:border-stone-700 rounded-xs focus:ring-1 focus:ring-stone-900 outline-none" 
+          />
+        </div>
+
+        <div>
+          <label class="block font-bold mb-1 uppercase tracking-wider text-stone-700 dark:text-stone-300">Scene Note / Description</label>
+          <input 
+            type="text" 
+            name="tag" 
+            placeholder="e.g. Accretion Disk Orbit" 
+            class="w-full p-2 bg-white dark:bg-stone-950 border border-stone-300 dark:border-stone-700 rounded-xs focus:ring-1 focus:ring-stone-900 outline-none" 
+          />
+        </div>
+
+        <div>
+          <label class="block font-bold mb-1 uppercase tracking-wider text-stone-700 dark:text-stone-300">Aspect Ratio</label>
+          <select name="aspect_ratio" class="w-full p-2 bg-white dark:bg-stone-950 border border-stone-300 dark:border-stone-700 rounded-xs">
+            <option value="2.39:1">2.39:1 (Anamorphic Scope)</option>
+            <option value="70mm IMAX">70mm IMAX (1.43:1 / 1.90:1)</option>
+            <option value="1.85:1">1.85:1 (Flat Widescreen)</option>
+            <option value="1.37:1">1.37:1 (Academy Ratio)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold mb-1 uppercase tracking-wider text-stone-700 dark:text-stone-300">Select Image (Movie Still)</label>
+          <div class="border-2 border-dashed border-stone-300 dark:border-stone-700 p-5 text-center rounded-xs bg-stone-50 dark:bg-stone-950/40">
+            <input 
+              type="file" 
+              name="frame" 
+              accept="image/*" 
+              required 
+              class="text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-xs file:border-0 file:text-xs file:font-mono file:bg-stone-900 file:text-white dark:file:bg-stone-100 dark:file:text-stone-900 cursor-pointer" 
+            />
+            <p class="text-[10px] text-stone-400 mt-2">Directly uploaded to Catbox.moe • Zero host storage used</p>
+          </div>
+        </div>
+
+        <div class="pt-3 flex justify-end gap-2">
+          <button type="button" id="cancelUploadBtn" class="px-4 py-2 border border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300">Cancel</button>
+          <button type="submit" id="submitUploadBtn" class="px-5 py-2 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 font-bold uppercase tracking-wider flex items-center gap-2">
+            <span id="uploadBtnText">Upload & Save</span>
+            <span id="uploadSpinner" class="hidden animate-spin">⏳</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= LIGHTBOX MODAL ================= -->
+  <div id="lightboxModal" class="fixed inset-0 bg-black/95 backdrop-blur-md flex items-center justify-center z-50 hidden p-4 sm:p-8">
+    <div class="max-w-5xl w-full flex flex-col items-center" id="lightboxContent">
+      <div class="polaroid-card w-full shadow-2xl transform rotate-0">
+        <div class="aspect-[2.39/1] overflow-hidden bg-black flex items-center justify-center">
+          <img id="lightboxImg" src="" alt="Cinema Frame" class="max-w-full max-h-[70vh] object-contain" />
+        </div>
+        <div class="pt-4 pb-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-stone-800">
+          <div>
+            <h4 id="lightboxTitle" class="font-serif text-2xl italic">Movie Title</h4>
+            <p id="lightboxTime" class="font-mono text-xs text-stone-600 font-bold mt-0.5">⏱ 00:00:00</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="lightboxCopyBtn" class="px-4 py-2 border border-stone-800 font-mono text-xs uppercase tracking-wider hover:bg-stone-900 hover:text-white transition-all">
+              Copy Direct Catbox URL
+            </button>
+            <button id="closeLightboxBtn" class="px-4 py-2 bg-stone-900 text-white font-mono text-xs uppercase tracking-wider">
+              Close [ESC]
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TOAST NOTIFICATION ================= -->
+  <div id="toast" class="fixed bottom-6 right-6 bg-stone-900 text-white dark:bg-white dark:text-stone-900 font-mono text-xs px-4 py-2.5 rounded-xs shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
+    <span>✓</span>
+    <span id="toastMsg">Notification message</span>
+  </div>
+
+  <!-- ================= CLIENT SCRIPTS ================= -->
+  <script is:inline>
+    // Theme setup
+    const themeBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    
+    // Check saved theme or system preference
+    if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+      themeIcon.textContent = '☀️';
+    } else {
+      document.documentElement.classList.remove('dark');
+      themeIcon.textContent = '🌙';
+    }
+
+    themeBtn?.addEventListener('click', () => {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      themeIcon.textContent = isDark ? '☀️' : '🌙';
+    });
+
+    // Toast helper
+    window.showToast = function(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      if (!toast || !toastMsg) return;
+      toastMsg.textContent = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2800);
+    };
+
+    window.copyToClipboard = function(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        window.showToast('Copied to clipboard: ' + text);
+      });
+    };
+
+    // Upload modal logic
+    const uploadModal = document.getElementById('uploadModal');
+    const openUploadBtn = document.getElementById('openUploadBtn');
+    const closeUploadModalBtn = document.getElementById('closeUploadModalBtn');
+    const cancelUploadBtn = document.getElementById('cancelUploadBtn');
+    const uploadForm = document.getElementById('uploadForm');
+
+    window.openUploadWithMovie = function(tmdbId) {
+      const idInput = document.getElementById('modalTmdbId');
+      if (idInput && tmdbId) idInput.value = tmdbId;
+      uploadModal?.classList.remove('hidden');
+    };
+
+    openUploadBtn?.addEventListener('click', () => {
+      uploadModal?.classList.remove('hidden');
+    });
+
+    function hideUploadModal() {
+      uploadModal?.classList.add('hidden');
+    }
+    closeUploadModalBtn?.addEventListener('click', hideUploadModal);
+    cancelUploadBtn?.addEventListener('click', hideUploadModal);
+
+    uploadForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('submitUploadBtn');
+      const btnText = document.getElementById('uploadBtnText');
+      const spinner = document.getElementById('uploadSpinner');
+
+      const formData = new FormData(uploadForm);
+      btnText.textContent = 'Ingesting to Catbox...';
+      spinner.classList.remove('hidden');
+      submitBtn.disabled = true;
+
+      try {
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        
+        if (res.ok && data.status === 'success') {
+          window.showToast('Frame pinned! Permanent Catbox URL created.');
+          hideUploadModal();
+          uploadForm.reset();
+          // Reload to show the newly pinned frame
+          setTimeout(() => window.location.reload(), 1200);
+        } else {
+          alert('Upload failed: ' + (data.message || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('Upload failed: ' + err.message);
+      } finally {
+        btnText.textContent = 'Upload & Save';
+        spinner.classList.add('hidden');
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Lightbox modal logic
+    const lightboxModal = document.getElementById('lightboxModal');
+    const closeLightboxBtn = document.getElementById('closeLightboxBtn');
+    const lightboxContent = document.getElementById('lightboxContent');
+    let currentLightboxUrl = '';
+
+    window.showLightbox = function(url, title, time) {
+      currentLightboxUrl = url;
+      document.getElementById('lightboxImg').src = url;
+      document.getElementById('lightboxTitle').textContent = title;
+      document.getElementById('lightboxTime').textContent = `⏱ Timestamp: ${time}`;
+      lightboxModal?.classList.remove('hidden');
+    };
+
+    function hideLightbox() {
+      lightboxModal?.classList.add('hidden');
+    }
+    closeLightboxBtn?.addEventListener('click', hideLightbox);
+    lightboxModal?.addEventListener('click', (e) => {
+      if (e.target === lightboxModal) hideLightbox();
+    });
+
+    document.getElementById('lightboxCopyBtn')?.addEventListener('click', () => {
+      if (currentLightboxUrl) {
+        window.copyToClipboard(currentLightboxUrl);
+      }
+    });
+
+    // Global keyboard shortcuts
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        hideLightbox();
+        hideUploadModal();
+        document.getElementById('searchDropdown')?.classList.add('hidden');
+      }
+    });
+
+    // Live TMDB Search Autocomplete
+    const searchInput = document.getElementById('globalSearchInput');
+    const searchDropdown = document.getElementById('searchDropdown');
+    let searchDebounce = null;
+
+    searchInput?.addEventListener('input', (e) => {
+      clearTimeout(searchDebounce);
+      const query = e.target.value.trim();
+
+      if (query.length < 2) {
+        searchDropdown.classList.add('hidden');
+        searchDropdown.innerHTML = '';
+        return;
+      }
+
+      searchDebounce = setTimeout(async () => {
+        try {
+          const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+          const data = await res.json();
+
+          if (data.results && data.results.length > 0) {
+            searchDropdown.innerHTML = data.results.map(m => `
+              <a href="/movie/${m.tmdbId}" class="flex items-center gap-3 p-2.5 hover:bg-stone-200 dark:hover:bg-stone-800 transition-colors">
+                <img src="${m.posterUrl || 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=100&q=80'}" class="w-9 h-13 object-cover rounded-xs" />
+                <div>
+                  <div class="font-serif text-sm font-bold text-stone-900 dark:text-stone-100">${m.title} <span class="font-mono text-xs font-normal text-stone-500">(${m.year})</span></div>
+                  <div class="font-mono text-[10px] text-stone-500">TMDB ID: #${m.tmdbId}</div>
+                </div>
+              </a>
+            `).join('');
+            searchDropdown.classList.remove('hidden');
+          } else {
+            searchDropdown.innerHTML = `<div class="p-3 text-xs font-mono text-stone-500">No movies found in index.</div>`;
+            searchDropdown.classList.remove('hidden');
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }, 250);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!searchInput?.contains(e.target) && !searchDropdown?.contains(e.target)) {
+        searchDropdown?.classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

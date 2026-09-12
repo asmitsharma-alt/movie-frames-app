@@ -1,0 +1,58 @@
+---
+import type { Frame } from '../lib/types';
+
+interface Props {
+  frame: Frame;
+  movieTitle: string;
+  index: number;
+}
+
+const { frame, movieTitle, index } = Astro.props;
+
+// Staggered natural physical tilts for the scrapbook pinboard effect
+const rotations = ['-rotate-1.5', 'rotate-2', '-rotate-1', 'rotate-1.5', '-rotate-2', 'rotate-1'];
+const rotationClass = rotations[index % rotations.length];
+---
+
+<div class="relative group cursor-pointer" onclick={`showLightbox('${frame.url}', '${movieTitle.replace(/'/g, "\\'")} — ${(frame.tag || 'Film Still').replace(/'/g, "\\'")}', '${frame.timestamp}')`}>
+  <!-- Washi tape at the top -->
+  <div class="washi-tape"></div>
+
+  <!-- Polaroid Paper Card -->
+  <div class={`polaroid-card rounded-xs transform ${rotationClass} transition-all duration-300`}>
+    
+    <!-- Movie Frame Still (Cinema 2.39:1 Ratio) -->
+    <div class="aspect-[2.39/1] overflow-hidden bg-stone-900 relative">
+      <img 
+        src={frame.url} 
+        alt={`${movieTitle} frame at ${frame.timestamp}`} 
+        loading="lazy"
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 grayscale contrast-125 group-hover:grayscale-0"
+      />
+      <span class="absolute bottom-2 left-2 px-1.5 py-0.5 bg-black/75 text-white font-mono text-[9px] uppercase tracking-wider backdrop-blur-xs">
+        {frame.aspectRatio || '35mm'}
+      </span>
+    </div>
+
+    <!-- Thick Polaroid Chin -->
+    <div class="pt-3 pb-1 flex items-center justify-between text-stone-900 dark:text-stone-900">
+      <div>
+        <p class="font-mono text-xs font-bold tracking-wider">⏱ {frame.timestamp}</p>
+        <p class="font-mono text-[10px] text-stone-500 truncate max-w-[170px] sm:max-w-[210px]">
+          "{frame.tag || 'Archived Still'}"
+        </p>
+      </div>
+
+      <!-- Copy Direct API Link Button -->
+      <button 
+        type="button"
+        onclick={`event.stopPropagation(); copyToClipboard('${frame.url}');`}
+        class="font-mono text-[10px] border border-stone-400 dark:border-stone-500 px-2 py-1 uppercase tracking-wider hover:bg-stone-900 hover:text-white dark:hover:bg-stone-900 dark:hover:text-white transition-colors"
+        title="Copy direct Catbox CDN link"
+      >
+        [🔗 API]
+      </button>
+    </div>
+
+  </div>
+</div>

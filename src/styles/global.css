@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --paper-bg: #f5f1e8;
+    --paper-card: #ffffff;
+    --paper-text: #1c1917;
+  }
+  .dark {
+    --paper-bg: #111113;
+    --paper-card: #f3efe6;
+    --paper-text: #1c1917;
+  }
+}
+
+/* Tactile paper texture with fine grain */
+.paper-texture {
+  background-color: var(--paper-bg);
+  background-image: 
+    radial-gradient(#0000000a 1px, transparent 1px),
+    radial-gradient(#00000006 1px, var(--paper-bg) 1px);
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
+}
+
+.dark .paper-texture {
+  background-color: #111113;
+  background-image: 
+    radial-gradient(#ffffff0a 1px, transparent 1px),
+    radial-gradient(#ffffff05 1px, #111113 1px);
+}
+
+/* Authentic Polaroid Card with thick chin */
+.polaroid-card {
+  background: var(--paper-card);
+  padding: 12px 12px 22px 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0,0,0,0.06);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center center;
+}
+
+.polaroid-card:hover {
+  box-shadow: 0 25px 40px -5px rgba(0, 0, 0, 0.25), 0 12px 20px -5px rgba(0, 0, 0, 0.15);
+  transform: translateY(-6px) scale(1.02) rotate(0deg) !important;
+}
+
+/* Frosted washi tape on top of Polaroid */
+.washi-tape {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(3px);
+  border-left: 2px dashed rgba(0, 0, 0, 0.15);
+  border-right: 2px dashed rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  z-index: 20;
+}
+
+.dark .washi-tape {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Ink Stamp badge effect */
+.stamp-badge {
+  border: 1.5px solid currentColor;
+  border-radius: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  display: inline-block;
+}
+
+/* Custom scrollbar for filmstrip */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #a8a29e;
+  border-radius: 3px;
+}
