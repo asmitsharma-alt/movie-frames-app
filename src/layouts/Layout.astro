@@ -27,7 +27,7 @@ const {
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 </head>
 
-<body class="min-h-screen transition-colors duration-150 font-sans selection:bg-[#e2f952] selection:text-black">
+<body class="min-h-screen transition-colors duration-150 font-sans selection:bg-[var(--accent-dynamic,#e2f952)] selection:text-[var(--accent-contrast,#000000)]">
 
   <!-- ================= NEO-BRUTALIST TOP NAVIGATION ================= -->
   <header class="border-b-2 border-black dark:border-white bg-[#f5f4ef] dark:bg-[#0d0d0f] sticky top-0 z-40 transition-colors">
@@ -37,7 +37,7 @@ const {
       <a href="/" class="flex items-center gap-3 group focus:outline-none">
         <div class="flex flex-col">
           <div class="flex items-center gap-2">
-            <span class="text-2xl sm:text-3xl font-black uppercase tracking-tighter text-black dark:text-white group-hover:bg-[#e2f952] group-hover:text-black transition-colors px-1 -ml-1">
+            <span class="text-2xl sm:text-3xl font-black uppercase tracking-tighter text-black dark:text-white group-hover:bg-[var(--accent-dynamic,#e2f952)] group-hover:text-[var(--accent-contrast,#000000)] transition-colors px-1 -ml-1">
               ARCHIVE.FRAME
             </span>
             <span class="brutal-tag text-[10px] font-mono px-2 py-0.5 font-bold">
@@ -45,7 +45,7 @@ const {
             </span>
           </div>
           <p class="font-mono text-[10px] text-zinc-600 dark:text-zinc-400 tracking-wider uppercase font-bold">
-            ZERO-DATABASE 35MM REPOSITORY • REST API
+            ZERO-DATABASE 35MM REPOSITORY • DYNAMIC PALETTES
           </p>
         </div>
       </a>
@@ -103,10 +103,10 @@ const {
   <footer class="border-t-2 border-black dark:border-white bg-white dark:bg-[#141418] mt-24 py-8 font-mono text-xs font-bold text-black dark:text-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
       <p class="uppercase tracking-wider">
-        ARCHIVE.FRAME // ZERO-DATABASE SYSTEM // POWERED BY CATBOX CDN & CLOUDFLARE KV
+        ARCHIVE.FRAME // ZERO-DATABASE SYSTEM // DYNAMIC CINEMA COLOR EXTRACTION
       </p>
       <div class="flex items-center gap-4 uppercase tracking-wider">
-        <a href="/api/frames?movie_id=157336" target="_blank" class="hover:bg-[#e2f952] hover:text-black px-1.5 py-0.5 border border-black dark:border-white transition-colors">
+        <a href="/api/frames?movie_id=157336" target="_blank" class="hover:bg-[var(--accent-dynamic,#e2f952)] hover:text-[var(--accent-contrast,#000000)] px-1.5 py-0.5 border border-black dark:border-white transition-colors">
           OPEN API
         </a>
         <span>•</span>
@@ -209,29 +209,48 @@ const {
   </div>
 
   <!-- ================= NEO-BRUTALIST CINEMA LIGHTBOX ================= -->
-  <div id="lightboxModal" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 hidden p-4 sm:p-6">
+  <div id="lightboxModal" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 hidden p-3 sm:p-6">
     <div class="max-w-5xl w-full flex flex-col items-center" id="lightboxContent">
-      <div class="bg-black border-2 border-white shadow-[8px_8px_0px_#ffffff] w-full p-2 sm:p-4 rounded-none">
+      <div class="bg-black border-2 border-white shadow-[8px_8px_0px_#ffffff] w-full p-3 sm:p-5 rounded-none">
         
         <!-- Screen Box -->
-        <div class="aspect-[2.39/1] overflow-hidden bg-black flex items-center justify-center border border-zinc-800">
-          <img id="lightboxImg" src="" alt="Cinema Still" class="max-w-full max-h-[72vh] object-contain" />
+        <div class="aspect-[2.39/1] overflow-hidden bg-black flex items-center justify-center border border-zinc-800 relative">
+          <img id="lightboxImg" src="" alt="Cinema Still" crossorigin="anonymous" class="max-w-full max-h-[70vh] object-contain" />
         </div>
 
         <!-- Brutalist Metadata & Controls -->
-        <div class="pt-3.5 pb-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white font-mono">
+        <div class="pt-3 pb-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white font-mono">
           <div>
             <h4 id="lightboxTitle" class="text-base sm:text-lg font-black uppercase tracking-tight">MOVIE TITLE</h4>
-            <p id="lightboxTime" class="text-xs text-[#e2f952] font-bold mt-0.5">⏱ 00:00:00</p>
+            <p id="lightboxTime" class="text-xs font-bold mt-0.5 text-dynamic-accent">⏱ 00:00:00</p>
           </div>
-          <div class="flex items-center gap-2.5">
-            <button id="lightboxCopyBtn" class="brutal-btn px-3.5 py-1.5 text-xs uppercase font-bold rounded-none flex items-center gap-1.5">
-              <span>COPY CATBOX URL</span>
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <button id="lightboxLockBtn" class="brutal-btn px-3 py-1.5 text-xs uppercase font-bold rounded-none flex items-center gap-1.5" title="Lock this frame palette as UI theme">
+              <span>LOCK THEME ⚡</span>
             </button>
-            <button id="closeLightboxBtn" class="brutal-btn-primary px-4 py-1.5 text-xs uppercase font-black rounded-none">
+            <button id="lightboxCopyBtn" class="brutal-btn px-3 py-1.5 text-xs uppercase font-bold rounded-none flex items-center gap-1.5">
+              <span>COPY URL ⎘</span>
+            </button>
+            <button id="closeLightboxBtn" class="brutal-btn-primary px-3.5 py-1.5 text-xs uppercase font-black rounded-none">
               CLOSE [ESC]
             </button>
           </div>
+        </div>
+
+        <!-- Dynamic Frame Palette Bar inside Lightbox -->
+        <div class="mt-2 pt-2 border-t border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-mono text-xs">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 shrink-0">
+              FRAME PALETTE:
+            </span>
+            <div id="lightboxPaletteStrip" class="flex items-center h-5 border border-white">
+              <!-- Swatches injected dynamically -->
+            </div>
+            <span id="lightboxPaletteHexes" class="text-[10px] text-zinc-400 font-mono"></span>
+          </div>
+          <span class="text-[9px] uppercase tracking-wider text-zinc-500">
+            CLICK ANY SWATCH TO COPY HEX CODE
+          </span>
         </div>
 
       </div>
@@ -240,17 +259,16 @@ const {
 
   <!-- ================= BRUTALIST PILL TOAST ================= -->
   <div id="toast" class="brutal-card-accent px-4 py-2 text-xs font-mono font-black fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-150 flex items-center gap-2 border-2 border-black shadow-[4px_4px_0px_#000]">
-    <span class="text-black">✓</span>
+    <span>✓</span>
     <span id="toastMsg" class="uppercase">NOTIFICATION MESSAGE</span>
   </div>
 
-  <!-- ================= CLIENT SCRIPTS ================= -->
+  <!-- ================= CLIENT SCRIPTS & CINEMA COLOR ENGINE ================= -->
   <script is:inline>
     // Theme setup
     const themeBtn = document.getElementById('themeToggleBtn');
     const themeIcon = document.getElementById('themeIcon');
     
-    // Check saved theme or system preference
     if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.classList.add('dark');
       themeIcon.textContent = '☀️';
@@ -279,9 +297,347 @@ const {
 
     window.copyToClipboard = function(text) {
       navigator.clipboard.writeText(text).then(() => {
-        window.showToast('COPIED TO CLIPBOARD');
+        window.showToast(`COPIED: ${text}`);
       });
     };
+
+    // =========================================================================
+    // DYNAMIC CINEMA COLOR PALETTE ENGINE
+    // Extracts dominant cinematic hues from 35mm frames and morphs UI theme
+    // =========================================================================
+
+    window._paletteCache = new Map();
+    window._paletteLocked = false;
+    window._currentPalette = ['#e2f952', '#141418', '#ffffff', '#52525b', '#d4d4d8'];
+    window._defaultHeroPalette = null;
+    window._defaultHeroLabel = '';
+
+    function hexToRgb(hex) {
+      if (!hex) return null;
+      let clean = hex.replace('#', '');
+      if (clean.length === 3) {
+        clean = clean.split('').map(c => c + c).join('');
+      }
+      const num = parseInt(clean, 16);
+      return {
+        r: (num >> 16) & 255,
+        g: (num >> 8) & 255,
+        b: num & 255
+      };
+    }
+
+    function rgbToHex(r, g, b) {
+      const h = ((1 << 24) + (Math.round(r) << 16) + (Math.round(g) << 8) + Math.round(b)).toString(16).slice(1);
+      return '#' + h;
+    }
+
+    // High-speed pixel sampler & color clustering
+    window.extractPaletteFromImage = function(imgOrUrl, callback) {
+      let src = typeof imgOrUrl === 'string' ? imgOrUrl : imgOrUrl.src;
+      if (!src) return;
+
+      if (window._paletteCache.has(src)) {
+        callback(window._paletteCache.get(src));
+        return;
+      }
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      if (!ctx) return;
+
+      const size = 48;
+      canvas.width = size;
+      canvas.height = size;
+
+      const sampleAndCluster = (img) => {
+        try {
+          ctx.drawImage(img, 0, 0, size, size);
+          const data = ctx.getImageData(0, 0, size, size).data;
+          const buckets = {};
+
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            const a = data[i + 3];
+            if (a < 128) continue;
+
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            const diff = max - min;
+            const lum = (r * 299 + g * 587 + b * 114) / 1000;
+
+            // Skip pure letterbox black & blown white
+            if (lum < 16 || lum > 245) continue;
+
+            const qr = Math.round(r / 20) * 20;
+            const qg = Math.round(g / 20) * 20;
+            const qb = Math.round(b / 20) * 20;
+            const key = `${qr},${qg},${qb}`;
+
+            const sat = max === 0 ? 0 : diff / max;
+            // Reward rich cinematic saturation & balanced lightness
+            const score = (1 + sat * 2.5) * (0.6 + Math.sin((lum / 255) * Math.PI) * 0.4);
+
+            if (!buckets[key]) {
+              buckets[key] = { r: qr, g: qg, b: qb, count: 0, sat, lum };
+            }
+            buckets[key].count += score;
+          }
+
+          const sorted = Object.values(buckets).sort((a, b) => b.count - a.count);
+          if (sorted.length === 0) {
+            const fallback = ['#e2f952', '#141418', '#38bdf8', '#f97316', '#a3e635'];
+            window._paletteCache.set(src, fallback);
+            callback(fallback);
+            return;
+          }
+
+          const palette = [];
+          const dist = (c1, c2) => Math.hypot(c1.r - c2.r, c1.g - c2.g, c1.b - c2.b);
+
+          // 1. Prime vibrant accent
+          const vibrantCandidates = sorted.slice(0, 12).sort((a, b) => (b.sat * 2 + b.count * 0.02) - (a.sat * 2 + a.count * 0.02));
+          const primary = vibrantCandidates[0] || sorted[0];
+          palette.push(rgbToHex(primary.r, primary.g, primary.b));
+
+          // 2-5. Pick distinct hue/tonal variations across the spectrum
+          for (const item of sorted) {
+            if (palette.length >= 5) break;
+            const candidateRgb = { r: item.r, g: item.g, b: item.b };
+            const isDistinct = palette.every(hex => {
+              const exRgb = hexToRgb(hex);
+              return exRgb && dist(candidateRgb, exRgb) > 40;
+            });
+            if (isDistinct) {
+              palette.push(rgbToHex(item.r, item.g, item.b));
+            }
+          }
+
+          // Pad if frame was monochromatic
+          while (palette.length < 5) {
+            const p0 = hexToRgb(palette[0]);
+            const shift = palette.length * 45;
+            palette.push(rgbToHex((p0.r + shift) % 255, (p0.g + shift * 2) % 255, (p0.b + shift * 3) % 255));
+          }
+
+          window._paletteCache.set(src, palette);
+          callback(palette);
+        } catch (err) {
+          // If cross-origin tainted canvas, proxy image
+          if (!img._isProxied) {
+            img._isProxied = true;
+            const pImg = new Image();
+            pImg.crossOrigin = 'anonymous';
+            pImg.onload = () => sampleAndCluster(pImg);
+            pImg.src = '/api/proxy-image?url=' + encodeURIComponent(src);
+          }
+        }
+      };
+
+      if (typeof imgOrUrl !== 'string' && imgOrUrl.complete && imgOrUrl.naturalWidth > 0) {
+        sampleAndCluster(imgOrUrl);
+      } else {
+        const testImg = new Image();
+        testImg.crossOrigin = 'anonymous';
+        testImg.onload = () => sampleAndCluster(testImg);
+        testImg.onerror = () => {
+          // Fallback via proxy
+          const pImg = new Image();
+          pImg.crossOrigin = 'anonymous';
+          pImg.onload = () => sampleAndCluster(pImg);
+          pImg.src = '/api/proxy-image?url=' + encodeURIComponent(src);
+        };
+        testImg.src = src;
+      }
+    };
+
+    // Apply extracted palette across entire application UI
+    window.setDynamicPalette = function(palette, label = '', isLock = false) {
+      if (!palette || palette.length === 0) return;
+
+      if (window._paletteLocked && !isLock) return;
+
+      if (isLock) {
+        window._paletteLocked = true;
+        document.getElementById('resetPaletteBtn')?.classList.remove('hidden');
+        window.showToast(`THEME LOCKED: ${palette[0].toUpperCase()}`);
+      }
+
+      window._currentPalette = palette;
+      const primary = palette[0];
+      const rgb = hexToRgb(primary);
+      if (!rgb) return;
+
+      const lum = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255;
+      const contrastText = lum > 0.45 ? '#000000' : '#ffffff';
+
+      const root = document.documentElement;
+      root.style.setProperty('--accent-dynamic', primary);
+      root.style.setProperty('--accent-contrast', contrastText);
+      root.style.setProperty('--accent-secondary', palette[1] || '#ffffff');
+      root.style.setProperty('--accent-dim', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2)`);
+
+      palette.forEach((col, idx) => {
+        root.style.setProperty(`--palette-${idx + 1}`, col);
+      });
+
+      // Update Hero Palette Bar if present
+      const heroStrip = document.getElementById('heroPaletteStrip');
+      const heroLabel = document.getElementById('heroPaletteLabel');
+      if (heroStrip) {
+        heroStrip.innerHTML = palette.map((col, idx) => `
+          <button 
+            type="button"
+            onclick="event.stopPropagation(); window.setDynamicPalette(['${col}', ...window._currentPalette.filter(c => c !== '${col}')], '${label}', true);"
+            title="Lock ${col.toUpperCase()} (Click)"
+            class="w-5 sm:w-6 h-full transition-transform hover:scale-110 cursor-pointer border-r last:border-r-0 border-black dark:border-white"
+            style="background-color: ${col};"
+          ></button>
+        `).join('');
+      }
+
+      if (heroLabel && label) {
+        heroLabel.textContent = label.toUpperCase();
+      }
+
+      // Update Lightbox Palette Bar if modal is open
+      const lbStrip = document.getElementById('lightboxPaletteStrip');
+      const lbHexes = document.getElementById('lightboxPaletteHexes');
+      if (lbStrip) {
+        lbStrip.innerHTML = palette.map((col) => `
+          <button 
+            type="button"
+            onclick="event.stopPropagation(); window.copyToClipboard('${col}');"
+            title="Copy ${col.toUpperCase()}"
+            class="w-6 h-full transition-transform hover:scale-110 cursor-pointer border-r last:border-r-0 border-white"
+            style="background-color: ${col};"
+          ></button>
+        `).join('');
+      }
+      if (lbHexes) {
+        lbHexes.textContent = palette.map(c => c.toUpperCase()).join(' • ');
+      }
+    };
+
+    window.resetDynamicPalette = function() {
+      window._paletteLocked = false;
+      document.getElementById('resetPaletteBtn')?.classList.add('hidden');
+      if (window._defaultHeroPalette) {
+        window.setDynamicPalette(window._defaultHeroPalette, window._defaultHeroLabel || 'ORIGINAL STILL');
+      }
+      window.showToast('PALETTE UNLOCKED');
+    };
+
+    window.initHeroFramePalette = function(url, title) {
+      window._defaultHeroLabel = title;
+      window.extractPaletteFromImage(url, (palette) => {
+        window._defaultHeroPalette = palette;
+        if (!window._paletteLocked) {
+          window.setDynamicPalette(palette, title);
+        }
+      });
+    };
+
+    window.onFrameHover = function(url, label) {
+      if (window._paletteLocked) return;
+      window.extractPaletteFromImage(url, (palette) => {
+        window.setDynamicPalette(palette, label);
+      });
+    };
+
+    window.onFrameLeave = function() {
+      if (window._paletteLocked) return;
+      if (window._defaultHeroPalette) {
+        window.setDynamicPalette(window._defaultHeroPalette, window._defaultHeroLabel);
+      }
+    };
+
+    // Auto-scan frame cards on page and bind palettes & click events
+    function initFrameCards() {
+      const cards = document.querySelectorAll('.frame-card-container');
+      cards.forEach(card => {
+        const url = card.getAttribute('data-frame-url');
+        const title = card.getAttribute('data-frame-title') || 'CINEMA STILL';
+        const strip = card.querySelector('[data-palette-strip]');
+        const img = card.querySelector('.frame-img');
+
+        if (url && strip) {
+          window.extractPaletteFromImage(img || url, (palette) => {
+            const swatches = strip.querySelectorAll('.palette-swatch');
+            swatches.forEach((swatch, idx) => {
+              const col = palette[idx] || palette[0];
+              swatch.style.backgroundColor = col;
+              swatch.setAttribute('title', `Lock ${col.toUpperCase()} (Click to copy)`);
+              swatch.onclick = (e) => {
+                e.stopPropagation();
+                window.copyToClipboard(col);
+                window.setDynamicPalette([col, ...palette.filter(c => c !== col)], title, true);
+              };
+            });
+          });
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initFrameCards);
+    } else {
+      initFrameCards();
+    }
+
+    // Lightbox modal logic
+    const lightboxModal = document.getElementById('lightboxModal');
+    const closeLightboxBtn = document.getElementById('closeLightboxBtn');
+    const lightboxLockBtn = document.getElementById('lightboxLockBtn');
+    let currentLightboxUrl = '';
+    let currentLightboxPalette = null;
+
+    window.showLightbox = function(url, title, time) {
+      currentLightboxUrl = url;
+      document.getElementById('lightboxImg').src = url;
+      document.getElementById('lightboxTitle').textContent = title;
+      document.getElementById('lightboxTime').textContent = `⏱ TIMESTAMP: ${time}`;
+      
+      window.extractPaletteFromImage(url, (palette) => {
+        currentLightboxPalette = palette;
+        window.setDynamicPalette(palette, title, false);
+      });
+
+      lightboxModal?.classList.remove('hidden');
+    };
+
+    lightboxLockBtn?.addEventListener('click', () => {
+      if (currentLightboxPalette) {
+        window.setDynamicPalette(currentLightboxPalette, document.getElementById('lightboxTitle').textContent, true);
+      }
+    });
+
+    function hideLightbox() {
+      lightboxModal?.classList.add('hidden');
+      if (!window._paletteLocked && window._defaultHeroPalette) {
+        window.setDynamicPalette(window._defaultHeroPalette, window._defaultHeroLabel);
+      }
+    }
+    closeLightboxBtn?.addEventListener('click', hideLightbox);
+    lightboxModal?.addEventListener('click', (e) => {
+      if (e.target === lightboxModal) hideLightbox();
+    });
+
+    document.getElementById('lightboxCopyBtn')?.addEventListener('click', () => {
+      if (currentLightboxUrl) {
+        window.copyToClipboard(currentLightboxUrl);
+      }
+    });
+
+    // Global keyboard shortcuts
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        hideLightbox();
+        hideUploadModal();
+        document.getElementById('searchDropdown')?.classList.add('hidden');
+      }
+    });
 
     // Upload modal logic
     const uploadModal = document.getElementById('uploadModal');
@@ -341,43 +697,7 @@ const {
       }
     });
 
-    // Lightbox modal logic
-    const lightboxModal = document.getElementById('lightboxModal');
-    const closeLightboxBtn = document.getElementById('closeLightboxBtn');
-    let currentLightboxUrl = '';
-
-    window.showLightbox = function(url, title, time) {
-      currentLightboxUrl = url;
-      document.getElementById('lightboxImg').src = url;
-      document.getElementById('lightboxTitle').textContent = title;
-      document.getElementById('lightboxTime').textContent = `⏱ TIMESTAMP: ${time}`;
-      lightboxModal?.classList.remove('hidden');
-    };
-
-    function hideLightbox() {
-      lightboxModal?.classList.add('hidden');
-    }
-    closeLightboxBtn?.addEventListener('click', hideLightbox);
-    lightboxModal?.addEventListener('click', (e) => {
-      if (e.target === lightboxModal) hideLightbox();
-    });
-
-    document.getElementById('lightboxCopyBtn')?.addEventListener('click', () => {
-      if (currentLightboxUrl) {
-        window.copyToClipboard(currentLightboxUrl);
-      }
-    });
-
-    // Global keyboard shortcuts
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        hideLightbox();
-        hideUploadModal();
-        document.getElementById('searchDropdown')?.classList.add('hidden');
-      }
-    });
-
-    // Live Autocomplete (Poster + Title + Year ONLY as requested)
+    // Live Autocomplete (Poster + Title + Year ONLY)
     const searchInput = document.getElementById('globalSearchInput');
     const searchDropdown = document.getElementById('searchDropdown');
     let searchDebounce = null;
@@ -401,13 +721,12 @@ const {
             let typoHeader = '';
             if (data.topMatch && data.topMatch.toLowerCase() !== query.toLowerCase()) {
               typoHeader = `
-                <div class="px-3 py-1.5 bg-[#e2f952] text-black border-2 border-black font-mono font-black text-[11px] uppercase mb-1">
+                <div class="px-3 py-1.5 bg-dynamic-accent border-2 border-black font-mono font-black text-[11px] uppercase mb-1">
                   [ AUTO-MATCH: ${data.topMatch} ]
                 </div>
               `;
             }
 
-            // ONLY Poster, Title, Year (no extra descriptions or metadata)
             const listHtml = data.results.map(m => `
               <a href="/movie/${m.tmdbId}" class="flex items-center gap-3 p-2 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors group">
                 <img 
@@ -426,7 +745,7 @@ const {
             `).join('');
 
             const viewAllFooter = `
-              <a href="/?q=${encodeURIComponent(query)}" class="block mt-1 p-2 text-center font-mono text-xs uppercase font-black bg-black text-white dark:bg-white dark:text-black hover:bg-[#e2f952] hover:text-black dark:hover:bg-[#e2f952] dark:hover:text-black transition-colors">
+              <a href="/?q=${encodeURIComponent(query)}" class="block mt-1 p-2 text-center font-mono text-xs uppercase font-black bg-black text-white dark:bg-white dark:text-black hover:bg-[var(--accent-dynamic,#e2f952)] hover:text-[var(--accent-contrast,#000000)] transition-colors">
                 VIEW ALL RESULTS →
               </a>
             `;

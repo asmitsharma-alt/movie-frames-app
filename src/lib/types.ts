@@ -5,6 +5,7 @@ export interface Frame {
   tag?: string;            // e.g. "Gargantua Accretion Disk"
   aspectRatio?: string;    // e.g. "2.39:1"
   uploadedAt: string;      // ISO string
+  palette?: string[];      // 5 extracted hex colors, e.g. ["#ff6b1a", "#1e293b", ...]
 }
 
 export interface MovieInfo {

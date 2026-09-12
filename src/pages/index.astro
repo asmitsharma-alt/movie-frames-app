@@ -36,6 +36,8 @@ const featuredMovies = [
   { id: '27205', title: 'Inception', year: '2010' },
   { id: '872585', title: 'Oppenheimer', year: '2023' }
 ];
+
+const primaryHeroImage = frames[0]?.url || movie.backdropUrl || movie.posterUrl || '';
 ---
 
 <Layout title={searchQuery ? `Search: "${searchQuery}" — Archive.Frame` : `${movie.title} (${movie.year}) — Film Stills Archive`}>
@@ -47,7 +49,7 @@ const featuredMovies = [
       <div class="brutal-card p-6 sm:p-8 mb-8 rounded-none flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
           <div class="flex items-center gap-2 mb-2 font-mono text-xs uppercase font-bold">
-            <a href="/" class="hover:bg-[#e2f952] hover:text-black px-1.5 py-0.5 border border-black dark:border-white transition-colors">
+            <a href="/" class="hover:bg-[var(--accent-dynamic,#e2f952)] hover:text-[var(--accent-contrast,#000000)] px-1.5 py-0.5 border border-black dark:border-white transition-colors">
               ← INDEX
             </a>
             <span>//</span>
@@ -57,7 +59,7 @@ const featuredMovies = [
           </div>
           
           <h1 class="text-3xl sm:text-4xl font-black uppercase tracking-tight text-black dark:text-white">
-            RESULTS FOR <span class="bg-[#e2f952] text-black px-2">"{searchQuery}"</span>
+            RESULTS FOR <span class="bg-dynamic-accent px-2">"{searchQuery}"</span>
           </h1>
 
           {searchResults && searchResults.length > 0 && searchResults[0].title.toLowerCase() !== searchQuery.toLowerCase() && (
@@ -117,7 +119,7 @@ const featuredMovies = [
             class={`px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-none whitespace-nowrap transition-colors border-2 ${
               item.id === currentId 
                 ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white' 
-                : 'bg-transparent text-black dark:text-white border-transparent hover:bg-[#e2f952] hover:text-black hover:border-black'
+                : 'bg-transparent text-black dark:text-white border-transparent hover:bg-[var(--accent-dynamic,#e2f952)] hover:text-[var(--accent-contrast,#000000)] hover:border-black'
             }`}
           >
             {item.title} <span class="opacity-75 text-[10px]">[{item.year}]</span>
@@ -132,6 +134,7 @@ const featuredMovies = [
             <img 
               src={movie.posterUrl} 
               alt={movie.title} 
+              crossorigin="anonymous"
               class="w-24 sm:w-28 aspect-[2/3] object-cover border-2 border-black dark:border-white shadow-[4px_4px_0px_#000000] dark:shadow-[4px_4px_0px_#ffffff] hidden sm:block shrink-0 rounded-none" 
             />
           )}
@@ -159,6 +162,32 @@ const featuredMovies = [
                 {movie.overview}
               </p>
             )}
+
+            <!-- Interactive Cinema Frame Palette Bar -->
+            <div id="heroPaletteSection" class="mt-4 pt-3 border-t-2 border-black/15 dark:border-white/15 flex flex-wrap items-center gap-3">
+              <div class="flex items-center gap-2 font-mono">
+                <span class="text-[10px] uppercase font-black tracking-wider text-black dark:text-white shrink-0">
+                  FRAME PALETTE:
+                </span>
+                <div id="heroPaletteStrip" class="flex items-center h-5 border-2 border-black dark:border-white shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_#fff]">
+                  <!-- Swatches injected dynamically -->
+                </div>
+              </div>
+
+              <span id="heroPaletteLabel" class="font-mono text-[10px] uppercase font-bold text-zinc-600 dark:text-zinc-400">
+                EXTRACTING STILL PALETTE...
+              </span>
+
+              <button 
+                id="resetPaletteBtn"
+                onclick="window.resetDynamicPalette()"
+                class="font-mono text-[10px] font-bold uppercase px-2 py-0.5 border border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors hidden"
+                title="Reset to frame default"
+              >
+                UNLOCK [↺]
+              </button>
+            </div>
+
           </div>
         </div>
 
@@ -195,7 +224,7 @@ const featuredMovies = [
             onclick={`openUploadWithMovie('${movie.tmdbId}')`}
             class="brutal-card brutal-card-hover p-6 flex flex-col items-center justify-center text-center cursor-pointer min-h-[220px] rounded-none border-2 border-dashed border-black dark:border-white group"
           >
-            <div class="w-12 h-12 border-2 border-black dark:border-white bg-[#e2f952] text-black font-black text-2xl flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+            <div class="w-12 h-12 border-2 border-black dark:border-white bg-dynamic-accent font-black text-2xl flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
               +
             </div>
             <p class="font-black text-base uppercase tracking-tight text-black dark:text-white">PIN NEW FRAME</p>
@@ -242,7 +271,7 @@ const featuredMovies = [
           <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs font-mono font-bold">
             <div>
               <p class="text-zinc-600 dark:text-zinc-400 mb-2 uppercase">// 1. GET FRAMES FOR MOVIE:</p>
-              <div class="bg-black text-[#e2f952] p-3.5 border-2 border-black dark:border-white shadow-[4px_4px_0px_#000000] dark:shadow-[4px_4px_0px_#ffffff] select-all overflow-x-auto rounded-none">
+              <div class="bg-black text-dynamic-accent p-3.5 border-2 border-black dark:border-white shadow-[4px_4px_0px_#000000] dark:shadow-[4px_4px_0px_#ffffff] select-all overflow-x-auto rounded-none font-bold">
                 curl -X GET "{Astro.url.origin}/api/frames?movie_id={movie.tmdbId}"
               </div>
               
@@ -278,5 +307,19 @@ const featuredMovies = [
 
     </main>
   )}
+
+  <script is:inline define:vars={{ initialHeroUrl: primaryHeroImage, initialMovieTitle: `${movie.title} (${movie.year})` }}>
+    if (initialHeroUrl) {
+      if (window.initHeroFramePalette) {
+        window.initHeroFramePalette(initialHeroUrl, initialMovieTitle);
+      } else {
+        window.addEventListener('DOMContentLoaded', () => {
+          if (window.initHeroFramePalette) {
+            window.initHeroFramePalette(initialHeroUrl, initialMovieTitle);
+          }
+        });
+      }
+    }
+  </script>
 
 </Layout>

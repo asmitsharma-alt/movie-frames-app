@@ -8,11 +8,18 @@ interface Props {
 }
 
 const { frame, movieTitle } = Astro.props;
+const cleanTitle = movieTitle.replace(/'/g, "\\'");
+const cleanTag = (frame.tag || 'CINEMA STILL').replace(/'/g, "\\'");
+const frameLabel = `${cleanTitle} — ${cleanTag} [${frame.timestamp}]`;
 ---
 
 <div 
-  class="group cursor-pointer h-full" 
-  onclick={`showLightbox('${frame.url}', '${movieTitle.replace(/'/g, "\\'")} — ${(frame.tag || 'CINEMA STILL').replace(/'/g, "\\'")}', '${frame.timestamp}')`}
+  class="group cursor-pointer h-full frame-card-container" 
+  data-frame-url={frame.url}
+  data-frame-title={frameLabel}
+  onclick={`showLightbox('${frame.url}', '${cleanTitle} — ${cleanTag}', '${frame.timestamp}')`}
+  onmouseenter={`if (window.onFrameHover) window.onFrameHover('${frame.url}', '${frameLabel}')`}
+  onmouseleave="if (window.onFrameLeave) window.onFrameLeave()"
   role="button"
   tabindex="0"
   aria-label={`View frame at ${frame.timestamp}`}
@@ -26,7 +33,8 @@ const { frame, movieTitle } = Astro.props;
         src={frame.url} 
         alt={`${movieTitle} frame at ${frame.timestamp}`} 
         loading="lazy"
-        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-out"
+        crossorigin="anonymous"
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 ease-out frame-img"
       />
       
       <!-- Minimal Aspect Ratio Stamp -->
@@ -36,19 +44,33 @@ const { frame, movieTitle } = Astro.props;
 
       <!-- Expand Hover Hint -->
       <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex items-center justify-center">
-        <span class="px-3 py-1 bg-[#e2f952] text-black font-mono font-black text-xs uppercase border-2 border-black tracking-wider">
+        <span class="px-3 py-1 bg-dynamic-accent font-mono font-black text-xs uppercase border-2 border-black dark:border-white tracking-wider shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_#fff]">
           EXPAND ↗
         </span>
       </div>
     </div>
 
+    <!-- 5-Color Cinema Palette Bar (Extracted Dynamically from Frame) -->
+    <div 
+      class="palette-strip mt-2.5 h-3 flex border-2 border-black dark:border-white overflow-hidden bg-zinc-900" 
+      data-palette-strip
+      title="Cinematic Frame Palette (Click swatch to lock color)"
+    >
+      <div class="palette-swatch flex-1 h-full transition-all" data-swatch-idx="0"></div>
+      <div class="palette-swatch flex-1 h-full transition-all" data-swatch-idx="1"></div>
+      <div class="palette-swatch flex-1 h-full transition-all" data-swatch-idx="2"></div>
+      <div class="palette-swatch flex-1 h-full transition-all" data-swatch-idx="3"></div>
+      <div class="palette-swatch flex-1 h-full transition-all" data-swatch-idx="4"></div>
+    </div>
+
     <!-- Minimal Cinematographer Metadata: Timestamp & Scene Label -->
-    <div class="pt-2.5 px-0.5 flex items-center justify-between gap-2 text-black dark:text-white font-mono">
+    <div class="pt-2 px-0.5 flex items-center justify-between gap-2 text-black dark:text-white font-mono">
       <div class="min-w-0">
-        <p class="text-xs font-bold tracking-wider uppercase">
-          {frame.timestamp}
+        <p class="text-xs font-bold tracking-wider uppercase flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-none inline-block border border-black dark:border-white" style="background-color: var(--accent-dynamic);"></span>
+          <span>{frame.timestamp}</span>
         </p>
-        <p class="text-[11px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-tight truncate max-w-[200px] sm:max-w-[240px]">
+        <p class="text-[11px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-tight truncate max-w-[180px] sm:max-w-[220px]">
           {frame.tag || 'ARCHIVE STILL'}
         </p>
       </div>
@@ -57,7 +79,7 @@ const { frame, movieTitle } = Astro.props;
       <button 
         type="button"
         onclick={`event.stopPropagation(); copyToClipboard('${frame.url}');`}
-        class="brutal-btn px-2 py-1 text-[10px] font-mono font-bold uppercase rounded-none hover:bg-[#e2f952] hover:text-black shrink-0"
+        class="brutal-btn px-2 py-1 text-[10px] font-mono font-bold uppercase rounded-none hover:bg-[var(--accent-dynamic,#e2f952)] hover:text-[var(--accent-contrast,#000000)] shrink-0"
         title="Copy direct Catbox URL"
       >
         LINK ⎘

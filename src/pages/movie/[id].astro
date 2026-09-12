@@ -24,13 +24,15 @@ let frames = userFrames;
 if (frames.length === 0) {
   frames = await getTmdbMovieBackdrops(id, apiKey);
 }
+
+const primaryHeroImage = frames[0]?.url || movie.backdropUrl || movie.posterUrl || '';
 ---
 
 <Layout title={`${movie.title} (${movie.year}) — Film Stills Archive`}>
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-4">
     
     <div class="mb-4">
-      <a href="/" class="font-mono text-xs font-bold uppercase hover:bg-[#e2f952] hover:text-black px-2 py-1 border border-black dark:border-white inline-block transition-colors">
+      <a href="/" class="font-mono text-xs font-bold uppercase hover:bg-[var(--accent-dynamic,#e2f952)] hover:text-[var(--accent-contrast,#000000)] px-2 py-1 border border-black dark:border-white inline-block transition-colors">
         ← BACK TO CATALOG
       </a>
     </div>
@@ -42,6 +44,7 @@ if (frames.length === 0) {
           <img 
             src={movie.posterUrl} 
             alt={movie.title} 
+            crossorigin="anonymous"
             class="w-24 sm:w-28 aspect-[2/3] object-cover border-2 border-black dark:border-white shadow-[4px_4px_0px_#000000] dark:shadow-[4px_4px_0px_#ffffff] hidden sm:block shrink-0 rounded-none" 
           />
         )}
@@ -69,6 +72,32 @@ if (frames.length === 0) {
               {movie.overview}
             </p>
           )}
+
+          <!-- Interactive Cinema Frame Palette Bar -->
+          <div id="heroPaletteSection" class="mt-4 pt-3 border-t-2 border-black/15 dark:border-white/15 flex flex-wrap items-center gap-3">
+            <div class="flex items-center gap-2 font-mono">
+              <span class="text-[10px] uppercase font-black tracking-wider text-black dark:text-white shrink-0">
+                FRAME PALETTE:
+              </span>
+              <div id="heroPaletteStrip" class="flex items-center h-5 border-2 border-black dark:border-white shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_#fff]">
+                <!-- Swatches injected dynamically -->
+              </div>
+            </div>
+
+            <span id="heroPaletteLabel" class="font-mono text-[10px] uppercase font-bold text-zinc-600 dark:text-zinc-400">
+              EXTRACTING STILL PALETTE...
+            </span>
+
+            <button 
+              id="resetPaletteBtn"
+              onclick="window.resetDynamicPalette()"
+              class="font-mono text-[10px] font-bold uppercase px-2 py-0.5 border border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors hidden"
+              title="Reset to frame default"
+            >
+              UNLOCK [↺]
+            </button>
+          </div>
+
         </div>
       </div>
 
@@ -105,7 +134,7 @@ if (frames.length === 0) {
           onclick={`openUploadWithMovie('${movie.tmdbId}')`}
           class="brutal-card brutal-card-hover p-6 flex flex-col items-center justify-center text-center cursor-pointer min-h-[220px] rounded-none border-2 border-dashed border-black dark:border-white group"
         >
-          <div class="w-12 h-12 border-2 border-black dark:border-white bg-[#e2f952] text-black font-black text-2xl flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+          <div class="w-12 h-12 border-2 border-black dark:border-white bg-dynamic-accent font-black text-2xl flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
             +
           </div>
           <p class="font-black text-base uppercase tracking-tight text-black dark:text-white">PIN NEW FRAME</p>
@@ -152,7 +181,7 @@ if (frames.length === 0) {
         <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs font-mono font-bold">
           <div>
             <p class="text-zinc-600 dark:text-zinc-400 mb-2 uppercase">// 1. GET FRAMES FOR MOVIE:</p>
-            <div class="bg-black text-[#e2f952] p-3.5 border-2 border-black dark:border-white shadow-[4px_4px_0px_#000000] dark:shadow-[4px_4px_0px_#ffffff] select-all overflow-x-auto rounded-none">
+            <div class="bg-black text-dynamic-accent p-3.5 border-2 border-black dark:border-white shadow-[4px_4px_0px_#000000] dark:shadow-[4px_4px_0px_#ffffff] select-all overflow-x-auto rounded-none font-bold">
               curl -X GET "{Astro.url.origin}/api/frames?movie_id={movie.tmdbId}"
             </div>
             
@@ -186,4 +215,18 @@ if (frames.length === 0) {
       </div>
     </section>
   </main>
+
+  <script is:inline define:vars={{ initialHeroUrl: primaryHeroImage, initialMovieTitle: `${movie.title} (${movie.year})` }}>
+    if (initialHeroUrl) {
+      if (window.initHeroFramePalette) {
+        window.initHeroFramePalette(initialHeroUrl, initialMovieTitle);
+      } else {
+        window.addEventListener('DOMContentLoaded', () => {
+          if (window.initHeroFramePalette) {
+            window.initHeroFramePalette(initialHeroUrl, initialMovieTitle);
+          }
+        });
+      }
+    }
+  </script>
 </Layout>

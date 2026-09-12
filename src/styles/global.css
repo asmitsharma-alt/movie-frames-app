@@ -8,6 +8,15 @@
     --shadow-main: #000000;
     --accent-yellow: #e2f952;
     --accent-red: #ff3b30;
+    --accent-dynamic: #e2f952;
+    --accent-contrast: #000000;
+    --accent-secondary: #000000;
+    --accent-dim: rgba(226, 249, 82, 0.15);
+    --palette-1: #e2f952;
+    --palette-2: #141418;
+    --palette-3: #ffffff;
+    --palette-4: #52525b;
+    --palette-5: #d4d4d8;
   }
   .dark {
     --bg-main: #0d0d0f;
@@ -16,6 +25,20 @@
     --shadow-main: #ffffff;
     --accent-yellow: #e2f952;
     --accent-red: #ff3b30;
+    --accent-dynamic: #e2f952;
+    --accent-contrast: #000000;
+    --accent-secondary: #ffffff;
+    --accent-dim: rgba(226, 249, 82, 0.2);
+    --palette-1: #e2f952;
+    --palette-2: #ffffff;
+    --palette-3: #141418;
+    --palette-4: #a1a1aa;
+    --palette-5: #27272a;
+  }
+
+  ::selection {
+    background-color: var(--accent-dynamic, #e2f952);
+    color: var(--accent-contrast, #000000);
   }
 
   body {
@@ -64,12 +87,18 @@
   box-shadow: 1px 1px 0px #ffffff;
 }
 
-/* Accent Card (Acid Yellow) */
+/* Accent Card (Dynamic Frame Palette) */
 .brutal-card-accent {
-  background-color: #e2f952;
-  color: #000000;
+  background-color: var(--accent-dynamic, #e2f952);
+  color: var(--accent-contrast, #000000);
   border: 2px solid #000000;
   box-shadow: 4px 4px 0px #000000;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.dark .brutal-card-accent {
+  border-color: #ffffff;
+  box-shadow: 4px 4px 0px #ffffff;
 }
 
 /* Buttons */
@@ -110,7 +139,7 @@
   box-shadow: 0px 0px 0px #ffffff;
 }
 
-/* Primary Action Button (Solid Black / Acid Accent) */
+/* Primary Action Button (Solid Black / Dynamic Frame Accent) */
 .brutal-btn-primary {
   background-color: #000000;
   color: #ffffff;
@@ -118,12 +147,12 @@
   box-shadow: 3px 3px 0px #000000;
   font-weight: 700;
   letter-spacing: 0.05em;
-  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.1s ease;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
 .brutal-btn-primary:hover {
-  background-color: #e2f952;
-  color: #000000;
+  background-color: var(--accent-dynamic, #e2f952);
+  color: var(--accent-contrast, #000000);
   transform: translate(-2px, -2px);
   box-shadow: 5px 5px 0px #000000;
 }
@@ -136,9 +165,9 @@
 }
 
 .dark .brutal-btn-primary:hover {
-  background-color: #e2f952;
-  color: #000000;
-  border-color: #e2f952;
+  background-color: var(--accent-dynamic, #e2f952);
+  color: var(--accent-contrast, #000000);
+  border-color: var(--accent-dynamic, #e2f952);
   box-shadow: 5px 5px 0px #ffffff;
 }
 
@@ -155,7 +184,7 @@
   border: 2px solid #000000;
   box-shadow: 3px 3px 0px #000000;
   font-family: 'Space Grotesk', -apple-system, sans-serif;
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  transition: box-shadow 0.15s ease, transform 0.15s ease, border-color 0.2s ease;
 }
 
 .dark .brutal-input {
@@ -168,12 +197,14 @@
 .brutal-input:focus {
   outline: none;
   background-color: #ffffff;
+  border-color: var(--accent-dynamic, #000000);
   box-shadow: 5px 5px 0px #000000;
   transform: translate(-1px, -1px);
 }
 
 .dark .brutal-input:focus {
   background-color: #1c1c22;
+  border-color: var(--accent-dynamic, #ffffff);
   box-shadow: 5px 5px 0px #ffffff;
 }
 
@@ -200,9 +231,55 @@
 }
 
 .brutal-tag-accent {
-  background-color: #e2f952;
-  color: #000000;
+  background-color: var(--accent-dynamic, #e2f952);
+  color: var(--accent-contrast, #000000);
   border: 1.5px solid #000000;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.dark .brutal-tag-accent {
+  border-color: #ffffff;
+}
+
+/* Dynamic Palette Utility Classes */
+.bg-dynamic-accent {
+  background-color: var(--accent-dynamic, #e2f952) !important;
+  color: var(--accent-contrast, #000000) !important;
+}
+
+.text-dynamic-accent {
+  color: var(--accent-dynamic, #e2f952) !important;
+}
+
+.border-dynamic-accent {
+  border-color: var(--accent-dynamic, #e2f952) !important;
+}
+
+/* Palette Strip & Swatches */
+.palette-strip {
+  display: flex;
+  height: 10px;
+  width: 100%;
+  border: 1.5px solid #000000;
+  overflow: hidden;
+  background: #18181b;
+}
+
+.dark .palette-strip {
+  border-color: #ffffff;
+}
+
+.palette-swatch {
+  flex: 1;
+  height: 100%;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  cursor: pointer;
+}
+
+.palette-swatch:hover {
+  transform: scaleY(1.4);
+  opacity: 0.9;
+  z-index: 10;
 }
 
 /* Custom crisp scrollbar */
