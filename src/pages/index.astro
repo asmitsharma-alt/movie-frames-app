@@ -1,21 +1,32 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import PolaroidCard from '../components/PolaroidCard.astro';
+import MoviePosterCard from '../components/MoviePosterCard.astro';
 import { getFramesForMovie } from '../lib/storage';
-import { getTmdbMovieDetails } from '../lib/tmdb';
+import { getTmdbMovieDetails, searchTmdbMovies, getTmdbMovieBackdrops } from '../lib/tmdb';
 import { getAppEnv } from '../lib/env';
 
 export const prerender = false;
 
-// Default to Interstellar (157336) or from query param
+const searchQuery = Astro.url.searchParams.get('q')?.trim();
 const currentId = Astro.url.searchParams.get('id') || '157336';
 const appEnv = getAppEnv();
 const apiKey = appEnv?.TMDB_API_KEY || (typeof process !== 'undefined' ? process.env?.TMDB_API_KEY : undefined);
 
-const [movie, frames] = await Promise.all([
+// 1. If searching, fetch movie poster search results from TMDB
+const searchResults = searchQuery ? await searchTmdbMovies(searchQuery, apiKey) : null;
+
+// 2. If not searching, fetch the active movie and its frames
+const [movie, userFrames] = await Promise.all([
   getTmdbMovieDetails(currentId, apiKey),
   getFramesForMovie(currentId)
 ]);
+
+// If no community frames exist yet, use official TMDB film stills as initial frames
+let frames = userFrames;
+if (frames.length === 0) {
+  frames = await getTmdbMovieBackdrops(currentId, apiKey);
+}
 
 const featuredMovies = [
   { id: '157336', title: 'Interstellar', year: '2014' },
@@ -27,142 +38,204 @@ const featuredMovies = [
 ];
 ---
 
-<Layout title={`${movie.title} (${movie.year}) — Film Stills Archive`}>
+<Layout title={searchQuery ? `Search: "${searchQuery}" — Archive.Frame` : `${movie.title} (${movie.year}) — Film Stills Archive`}>
   
-  <!-- ================= MOVIE ARCHIVE HEADER ================= -->
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
-    
-    <!-- Quick Film Catalog Selector Bar -->
-    <div class="flex items-center gap-2 overflow-x-auto pb-3 mb-6 border-b border-stone-300/60 dark:border-stone-800 scrollbar-thin">
-      <span class="font-mono text-[11px] uppercase tracking-widest text-stone-500 whitespace-nowrap mr-2">Featured Archives:</span>
-      {featuredMovies.map(item => (
-        <a 
-          href={`/?id=${item.id}`}
-          class={`px-3 py-1 text-xs font-mono rounded-xs whitespace-nowrap transition-all ${
-            item.id === currentId 
-              ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 font-bold shadow-xs' 
-              : 'bg-white/70 dark:bg-stone-900/60 border border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:border-stone-900'
-          }`}
-        >
-          {item.title} <span class="opacity-60 text-[10px]">({item.year})</span>
-        </a>
-      ))}
-    </div>
-
-    <!-- Active Movie Record Metadata -->
-    <div class="border-b-2 border-dashed border-stone-300 dark:border-stone-800 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
-      <div>
-        <div class="flex items-center gap-2 mb-1.5 flex-wrap">
-          <span class="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-            INDEX NO. #{movie.tmdbId}
-          </span>
-          <span class="text-stone-400">•</span>
-          <span class="text-xs font-mono text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            ZERO-DATABASE PUBLIC API ACTIVE
-          </span>
-        </div>
-
-        <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl text-stone-950 dark:text-stone-100 tracking-tight">
-          {movie.title} <span class="text-2xl sm:text-3xl font-normal text-stone-500 italic font-serif">({movie.year})</span>
-        </h1>
-
-        <p class="font-mono text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-2 max-w-3xl">
-          {movie.director ? `Directed by ${movie.director} • ` : ''}{movie.aspectRatio || '35mm Anamorphic Panavision'} • {frames.length} Collected Frames
-        </p>
-      </div>
-
-      <!-- Quick Action Buttons -->
-      <div class="flex items-center gap-3 flex-wrap font-mono text-xs">
-        <a 
-          href={`/api/frames?movie_id=${movie.tmdbId}`} 
-          target="_blank"
-          class="px-3.5 py-1.5 bg-amber-100 dark:bg-amber-950/70 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-300 hover:bg-amber-200 transition-all flex items-center gap-1.5 shadow-xs"
-        >
-          <span>⚡ GET /api/frames?movie_id={movie.tmdbId}</span>
-        </a>
-        
-        <button 
-          onclick={`openUploadWithMovie('${movie.tmdbId}')`}
-          class="px-3.5 py-1.5 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-xs hover:bg-stone-800 transition-all shadow-xs"
-        >
-          + Pin Frame Here
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= POLAROID PINBOARD GRID ================= -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    {frames.length > 0 ? (
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
-        {frames.map((frame, index) => (
-          <PolaroidCard frame={frame} movieTitle={movie.title} index={index} />
-        ))}
-
-        <div 
-          onclick={`openUploadWithMovie('${movie.tmdbId}')`}
-          class="border-2 border-dashed border-stone-400/80 dark:border-stone-700 hover:border-stone-900 dark:hover:border-stone-100 p-8 flex flex-col items-center justify-center text-center cursor-pointer group transition-all rounded-xs bg-stone-200/40 dark:bg-stone-900/40 min-h-[260px]"
-        >
-          <div class="w-12 h-12 rounded-full border border-stone-400 group-hover:border-stone-900 dark:group-hover:border-white flex items-center justify-center mb-3 transition-colors">
-            <span class="font-mono text-2xl font-light text-stone-600 group-hover:text-stone-900 dark:text-stone-300 dark:group-hover:text-white">+</span>
+  {searchQuery ? (
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
+      
+      <!-- Search Summary Header -->
+      <div class="border-b-2 border-dashed border-stone-300 dark:border-stone-800 pb-6 mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1.5">
+            <a href="/" class="font-mono text-xs text-stone-500 hover:text-stone-900 dark:hover:text-white">← Back to Index</a>
+            <span class="text-stone-400">•</span>
+            <span class="stamp-badge text-[10px] font-mono px-2 py-0.5 text-amber-800 dark:text-amber-300 border-amber-400">
+              TMDB LIVE SEARCH
+            </span>
           </div>
-          <p class="font-serif text-2xl italic">Pin New Frame</p>
-          <p class="font-mono text-xs text-stone-500 dark:text-stone-400 mt-1">
-            Streams to Catbox.moe • Added to KV
+          <h1 class="font-serif text-4xl sm:text-5xl text-stone-950 dark:text-stone-100 tracking-tight">
+            Results for <span class="italic font-serif">"{searchQuery}"</span>
+          </h1>
+          <p class="font-mono text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1">
+            Found {searchResults ? searchResults.length : 0} titles. Click any movie poster to open its 35mm Polaroid frame collection.
           </p>
         </div>
-      </div>
-    ) : (
-      <div class="text-center py-16 px-4 border border-dashed border-stone-300 dark:border-stone-700 rounded-xs bg-white/40 dark:bg-stone-900/30">
-        <p class="font-serif text-3xl italic text-stone-800 dark:text-stone-200">No community frames collected yet for this title.</p>
-        <p class="font-mono text-xs text-stone-500 mt-2 max-w-md mx-auto">
-          Be the first archivist to pin a 35mm frame. Your upload streams directly to Catbox and generates an open API endpoint.
-        </p>
-        <button 
-          onclick={`openUploadWithMovie('${movie.tmdbId}')`}
-          class="mt-6 px-6 py-2.5 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 font-mono text-xs uppercase tracking-wider rounded-xs hover:bg-stone-800 transition-all shadow-md"
-        >
-          + Pin The First Frame
-        </button>
-      </div>
-    )}
 
-    <!-- ================= ZERO-DB API DOCUMENTATION CALLOUT ================= -->
-    <section class="mt-20 border-t-2 border-dashed border-stone-300 dark:border-stone-800 pt-10">
-      <div class="bg-stone-900 text-stone-100 p-6 sm:p-8 rounded-xs font-mono shadow-xl border border-stone-800">
-        <div class="flex items-center justify-between gap-4 flex-wrap pb-4 border-b border-stone-800">
-          <div>
-            <span class="stamp-badge text-[9px] px-2 py-0.5 border-emerald-500 text-emerald-400">OPEN ARCHIVE REST API</span>
-            <h3 class="font-serif text-2xl italic text-white mt-1">Direct Developer Access</h3>
-          </div>
-          <button 
-            onclick={`copyToClipboard('${Astro.url.origin}/api/frames?movie_id=${movie.tmdbId}')`}
-            class="px-3 py-1.5 text-xs bg-stone-800 hover:bg-stone-700 border border-stone-700 text-stone-200"
+        <a 
+          href="/" 
+          class="px-4 py-2 border border-stone-300 dark:border-stone-700 bg-white/80 dark:bg-stone-900/80 rounded-xs font-mono text-xs uppercase tracking-wider hover:border-stone-900 dark:hover:border-white transition-all shadow-xs"
+        >
+          Clear Search
+        </a>
+      </div>
+
+      <!-- Poster Grid -->
+      {searchResults && searchResults.length > 0 ? (
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
+          {searchResults.map((m, index) => (
+            <MoviePosterCard movie={m} index={index} />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-20 px-4 border border-dashed border-stone-300 dark:border-stone-700 rounded-xs bg-white/40 dark:bg-stone-900/30">
+          <p class="font-serif text-3xl italic text-stone-800 dark:text-stone-200">No movie posters found for "{searchQuery}".</p>
+          <p class="font-mono text-xs text-stone-500 mt-2 max-w-md mx-auto">
+            Try searching another movie title like "Fight Club", "Blade Runner", or "Interstellar".
+          </p>
+          <a 
+            href="/" 
+            class="inline-block mt-6 px-6 py-2.5 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 font-mono text-xs uppercase tracking-wider rounded-xs hover:bg-stone-800 transition-all shadow-md"
           >
-            Copy GET URL
-          </button>
+            Return to Featured Films
+          </a>
+        </div>
+      )}
+
+    </section>
+  ) : (
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
+      
+      <!-- Quick Film Catalog Selector Bar -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-3 mb-6 border-b border-stone-300/60 dark:border-stone-800 scrollbar-thin">
+        <span class="font-mono text-[11px] uppercase tracking-widest text-stone-500 whitespace-nowrap mr-2">Featured Films:</span>
+        {featuredMovies.map(item => (
+          <a 
+            href={`/?id=${item.id}`}
+            class={`px-3 py-1 text-xs font-mono rounded-xs whitespace-nowrap transition-all ${
+              item.id === currentId 
+                ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 font-bold shadow-xs' 
+                : 'bg-white/70 dark:bg-stone-900/60 border border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:border-stone-900'
+            }`}
+          >
+            {item.title} <span class="opacity-60 text-[10px]">({item.year})</span>
+          </a>
+        ))}
+      </div>
+
+      <!-- Active Movie Record Metadata -->
+      <div class="border-b-2 border-dashed border-stone-300 dark:border-stone-800 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div class="flex items-start gap-4">
+          {movie.posterUrl && (
+            <img 
+              src={movie.posterUrl} 
+              alt={movie.title} 
+              class="w-20 sm:w-24 aspect-[2/3] object-cover rounded-xs border border-stone-300 dark:border-stone-700 shadow-md hidden sm:block" 
+            />
+          )}
+          <div>
+            <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+              <span class="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                INDEX NO. #{movie.tmdbId}
+              </span>
+              <span class="text-stone-400">•</span>
+              <span class="text-xs font-mono text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                ZERO-DATABASE PUBLIC API ACTIVE
+              </span>
+            </div>
+
+            <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl text-stone-950 dark:text-stone-100 tracking-tight">
+              {movie.title} <span class="text-2xl sm:text-3xl font-normal text-stone-500 italic font-serif">({movie.year})</span>
+            </h1>
+
+            <p class="font-mono text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-2 max-w-3xl">
+              {movie.director ? `Directed by ${movie.director} • ` : ''}{movie.aspectRatio || '35mm Anamorphic Panavision'} • {frames.length} Collected Frames
+            </p>
+          </div>
         </div>
 
-        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-          <div>
-            <p class="text-stone-400 mb-2">// 1. Retrieve all frames for any movie:</p>
-            <div class="bg-black/60 p-3 rounded-xs border border-stone-800 text-emerald-400 select-all overflow-x-auto">
-              curl -X GET "{Astro.url.origin}/api/frames?movie_id={movie.tmdbId}"
+        <!-- Quick Action Buttons -->
+        <div class="flex items-center gap-3 flex-wrap font-mono text-xs">
+          <a 
+            href={`/api/frames?movie_id=${movie.tmdbId}`} 
+            target="_blank"
+            class="px-3.5 py-1.5 bg-amber-100 dark:bg-amber-950/70 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-300 hover:bg-amber-200 transition-all flex items-center gap-1.5 shadow-xs"
+          >
+            <span>⚡ GET /api/frames?movie_id={movie.tmdbId}</span>
+          </a>
+          
+          <button 
+            onclick={`openUploadWithMovie('${movie.tmdbId}')`}
+            class="px-3.5 py-1.5 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-xs hover:bg-stone-800 transition-all shadow-xs"
+          >
+            + Pin Frame Here
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= POLAROID PINBOARD GRID ================= -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      {frames.length > 0 ? (
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
+          {frames.map((frame, index) => (
+            <PolaroidCard frame={frame} movieTitle={movie.title} index={index} />
+          ))}
+
+          <!-- Pin A Frame Call-to-Action Card -->
+          <div 
+            onclick={`openUploadWithMovie('${movie.tmdbId}')`}
+            class="border-2 border-dashed border-stone-400/80 dark:border-stone-700 hover:border-stone-900 dark:hover:border-stone-100 p-8 flex flex-col items-center justify-center text-center cursor-pointer group transition-all rounded-xs bg-stone-200/40 dark:bg-stone-900/40 min-h-[260px]"
+          >
+            <div class="w-12 h-12 rounded-full border border-stone-400 group-hover:border-stone-900 dark:group-hover:border-white flex items-center justify-center mb-3 transition-colors">
+              <span class="font-mono text-2xl font-light text-stone-600 group-hover:text-stone-900 dark:text-stone-300 dark:group-hover:text-white">+</span>
             </div>
-            
-            <p class="text-stone-400 mt-4 mb-2">// 2. Programmatic frame upload via Catbox:</p>
-            <div class="bg-black/60 p-3 rounded-xs border border-stone-800 text-amber-300 select-all overflow-x-auto">
-              curl -X POST "{Astro.url.origin}/api/upload" \<br/>
-              &nbsp;&nbsp;-F "tmdb_id={movie.tmdbId}" \<br/>
-              &nbsp;&nbsp;-F "timestamp=01:24:15" \<br/>
-              &nbsp;&nbsp;-F "frame=@still.jpg"
+            <p class="font-serif text-2xl italic">Pin New Frame</p>
+            <p class="font-mono text-xs text-stone-500 dark:text-stone-400 mt-1">
+              Streams to Catbox.moe • Added to KV
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div class="text-center py-16 px-4 border border-dashed border-stone-300 dark:border-stone-700 rounded-xs bg-white/40 dark:bg-stone-900/30">
+          <p class="font-serif text-3xl italic text-stone-800 dark:text-stone-200">No community frames collected yet for this title.</p>
+          <p class="font-mono text-xs text-stone-500 mt-2 max-w-md mx-auto">
+            Be the first archivist to pin a 35mm frame. Your upload streams directly to Catbox and generates an open API endpoint.
+          </p>
+          <button 
+            onclick={`openUploadWithMovie('${movie.tmdbId}')`}
+            class="mt-6 px-6 py-2.5 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 font-mono text-xs uppercase tracking-wider rounded-xs hover:bg-stone-800 transition-all shadow-md"
+          >
+            + Pin The First Frame
+          </button>
+        </div>
+      )}
+
+      <!-- ================= ZERO-DB API DOCUMENTATION CALLOUT ================= -->
+      <section class="mt-20 border-t-2 border-dashed border-stone-300 dark:border-stone-800 pt-10">
+        <div class="bg-stone-900 text-stone-100 p-6 sm:p-8 rounded-xs font-mono shadow-xl border border-stone-800">
+          <div class="flex items-center justify-between gap-4 flex-wrap pb-4 border-b border-stone-800">
+            <div>
+              <span class="stamp-badge text-[9px] px-2 py-0.5 border-emerald-500 text-emerald-400">OPEN ARCHIVE REST API</span>
+              <h3 class="font-serif text-2xl italic text-white mt-1">Direct Developer Access</h3>
             </div>
+            <button 
+              onclick={`copyToClipboard('${Astro.url.origin}/api/frames?movie_id=${movie.tmdbId}')`}
+              class="px-3 py-1.5 text-xs bg-stone-800 hover:bg-stone-700 border border-stone-700 text-stone-200"
+            >
+              Copy GET URL
+            </button>
           </div>
 
-          <div>
-            <p class="text-stone-400 mb-2">// JSON Response structure (Zero DB):</p>
-            <div class="bg-black/60 p-3 rounded-xs border border-stone-800 text-stone-300 overflow-x-auto max-h-44 text-[11px]">
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+            <div>
+              <p class="text-stone-400 mb-2">// 1. Retrieve all frames for any movie:</p>
+              <div class="bg-black/60 p-3 rounded-xs border border-stone-800 text-emerald-400 select-all overflow-x-auto">
+                curl -X GET "{Astro.url.origin}/api/frames?movie_id={movie.tmdbId}"
+              </div>
+              
+              <p class="text-stone-400 mt-4 mb-2">// 2. Programmatic frame upload via Catbox:</p>
+              <div class="bg-black/60 p-3 rounded-xs border border-stone-800 text-amber-300 select-all overflow-x-auto">
+                curl -X POST "{Astro.url.origin}/api/upload" \<br/>
+                &nbsp;&nbsp;-F "tmdb_id={movie.tmdbId}" \<br/>
+                &nbsp;&nbsp;-F "timestamp=01:24:15" \<br/>
+                &nbsp;&nbsp;-F "frame=@still.jpg"
+              </div>
+            </div>
+
+            <div>
+              <p class="text-stone-400 mb-2">// JSON Response structure (Zero DB):</p>
+              <div class="bg-black/60 p-3 rounded-xs border border-stone-800 text-stone-300 overflow-x-auto max-h-44 text-[11px]">
 <pre>{`{
   "status": "success",
   "movie": { "tmdbId": "${movie.tmdbId}", "title": "${movie.title}" },
@@ -175,11 +248,13 @@ const featuredMovies = [
     }
   ]
 }`}</pre>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-  </main>
+    </main>
+  )}
+
 </Layout>

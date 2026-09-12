@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getFramesForMovie } from '../../lib/storage';
-import { getTmdbMovieDetails } from '../../lib/tmdb';
+import { getTmdbMovieDetails, getTmdbMovieBackdrops } from '../../lib/tmdb';
 import { getAppEnv } from '../../lib/env';
 
 export const prerender = false;
@@ -24,10 +24,15 @@ export const GET: APIRoute = async ({ url }) => {
   const appEnv = getAppEnv();
   const apiKey = appEnv?.TMDB_API_KEY || (typeof process !== 'undefined' ? process.env?.TMDB_API_KEY : undefined);
   
-  const [movie, frames] = await Promise.all([
+  const [movie, userFrames] = await Promise.all([
     getTmdbMovieDetails(tmdbId, apiKey),
     getFramesForMovie(tmdbId)
   ]);
+
+  let frames = userFrames;
+  if (frames.length === 0) {
+    frames = await getTmdbMovieBackdrops(tmdbId, apiKey);
+  }
 
   return new Response(JSON.stringify({
     status: 'success',

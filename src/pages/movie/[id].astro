@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import PolaroidCard from '../../components/PolaroidCard.astro';
 import { getFramesForMovie } from '../../lib/storage';
-import { getTmdbMovieDetails } from '../../lib/tmdb';
+import { getTmdbMovieDetails, getTmdbMovieBackdrops } from '../../lib/tmdb';
 import { getAppEnv } from '../../lib/env';
 
 export const prerender = false;
@@ -15,10 +15,15 @@ if (!id) {
 const appEnv = getAppEnv();
 const apiKey = appEnv?.TMDB_API_KEY || (typeof process !== 'undefined' ? process.env?.TMDB_API_KEY : undefined);
 
-const [movie, frames] = await Promise.all([
+const [movie, userFrames] = await Promise.all([
   getTmdbMovieDetails(id, apiKey),
   getFramesForMovie(id)
 ]);
+
+let frames = userFrames;
+if (frames.length === 0) {
+  frames = await getTmdbMovieBackdrops(id, apiKey);
+}
 ---
 
 <Layout title={`${movie.title} (${movie.year}) — Film Stills Archive`}>

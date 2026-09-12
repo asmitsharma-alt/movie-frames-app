@@ -136,3 +136,28 @@ export async function getTmdbMovieDetails(tmdbId: string, apiKey?: string): Prom
     overview: 'Community-curated cinematography stills and frames.'
   };
 }
+
+/**
+ * Fetches official high-res backdrops and production stills from TMDB
+ */
+export async function getTmdbMovieBackdrops(tmdbId: string, apiKey?: string): Promise<any[]> {
+  if (!apiKey) return [];
+  try {
+    const res = await fetch(`https://api.themoviedb.org/3/movie/${tmdbId}/images?api_key=${apiKey}`);
+    if (res.ok) {
+      const data = await res.json();
+      const backdrops = data.backdrops || [];
+      return backdrops.slice(0, 9).map((b: any, index: number) => ({
+        id: `tmdb-still-${tmdbId}-${index}`,
+        url: `https://image.tmdb.org/t/p/w1280${b.file_path}`,
+        timestamp: `Still #${index + 1}`,
+        tag: 'Official 35mm Still',
+        aspectRatio: b.aspect_ratio ? `${(b.aspect_ratio).toFixed(2)}:1` : '2.39:1',
+        uploadedAt: new Date().toISOString()
+      }));
+    }
+  } catch (err) {
+    console.warn('Failed to fetch TMDB movie images:', err);
+  }
+  return [];
+}
